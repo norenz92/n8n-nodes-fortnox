@@ -13,9 +13,9 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **AUTH-02**: Credential uses client credentials grant to obtain access tokens from `apps.fortnox.se/oauth-v1/token`
 - [x] **AUTH-03**: Access tokens are automatically refreshed before expiry (1-hour TTL, no refresh tokens)
 - [x] **AUTH-04**: Each client has their own n8n credential with unique TenantId
-- [ ] **AUTH-05**: OAuth authorization code flow with `account_type=service` captures client consent and TenantId
-- [ ] **AUTH-06**: Shareable authorization endpoint that clients visit to initiate OAuth consent
-- [ ] **AUTH-07**: TenantId is extracted from OAuth response and stored in n8n credential automatically
+- [x] **AUTH-05**: OAuth authorization code flow with `account_type=service` captures client consent and TenantId
+- [x] **AUTH-06**: Shareable authorization endpoint that clients visit to initiate OAuth consent
+- [x] **AUTH-07**: TenantId is extracted from OAuth response and stored in n8n credential automatically
 - [x] **AUTH-08**: All foreseeable Fortnox scopes requested upfront during consent (to avoid re-authorization)
 
 ### Invoices
@@ -110,9 +110,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-02 | Phase 1 | Complete |
 | AUTH-03 | Phase 1 | Complete |
 | AUTH-04 | Phase 1 | Complete |
-| AUTH-05 | Phase 4 | Pending |
-| AUTH-06 | Phase 4 | Pending |
-| AUTH-07 | Phase 4 | Pending |
+| AUTH-05 | Phase 4 | Complete |
+| AUTH-06 | Phase 4 | Complete |
+| AUTH-07 | Phase 4 | Complete |
 | AUTH-08 | Phase 1 | Complete |
 | INV-01 | Phase 2 | Complete |
 | INV-02 | Phase 2 | Complete |

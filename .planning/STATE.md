@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-02-27T13:50:12.763Z"
+last_updated: "2026-02-27T14:35:09Z"
 progress:
-  total_phases: 3
-  completed_phases: 3
-  total_plans: 7
-  completed_plans: 7
+  total_phases: 4
+  completed_phases: 4
+  total_plans: 8
+  completed_plans: 8
 ---
 
 # Project State
@@ -18,23 +18,23 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Core value:** Clients self-authorize Fortnox accounts through a simple link; agency immediately uses those credentials in n8n workflows to automate invoices, customers, articles, and orders.
-**Current focus:** Phase 3 - Customer, Article, and Order Resources (Complete)
+**Current focus:** Phase 4 - OAuth Consent Onboarding (Complete)
 
 ## Current Position
 
-Phase: 3 of 4 (Customer, Article, and Order Resources)
-Plan: 3 of 3 in current phase (COMPLETE)
-Status: Phase 3 Complete -- All 3 plans executed
-Last activity: 2026-02-27 - Completed 03-03-PLAN.md (Resource Wiring)
+Phase: 4 of 4 (OAuth Consent Onboarding)
+Plan: 1 of 1 in current phase (COMPLETE)
+Status: Phase 4 Complete -- All 1 plan executed
+Last activity: 2026-02-27 - Completed 04-01-PLAN.md (OAuth Consent Onboarding Workflow)
 
 Progress: [##########] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
+- Total plans completed: 8
 - Average duration: 3min
-- Total execution time: 0.35 hours
+- Total execution time: 0.42 hours
 
 **By Phase:**
 
@@ -43,9 +43,10 @@ Progress: [##########] 100%
 | 1 | 2 | 7min | 3.5min |
 | 2 | 2 | 6min | 3min |
 | 3 | 3 | 8min | 2.7min |
+| 4 | 1 | 4min | 4min |
 
 **Recent Trend:**
-- Last 5 plans: 4min, 2min, 2min, 2min, 4min
+- Last 5 plans: 2min, 2min, 2min, 4min, 4min
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -54,6 +55,7 @@ Progress: [##########] 100%
 | Phase 03 P01 | 2min | 2 tasks | 2 files |
 | Phase 03 P02 | 2min | 1 tasks | 1 files |
 | Phase 03 P03 | 4min | 2 tasks | 4 files |
+| Phase 04 P01 | 4min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -83,6 +85,10 @@ Recent decisions affecting current work:
 - [03-03]: Resource blocks ordered alphabetically in selector and execute(): article, customer, invoice, order
 - [03-03]: Delete operations return { success: true } since Fortnox DELETE returns empty body
 - [03-03]: Order createInvoice extracts response.Invoice (not response.Order) per Fortnox API behavior
+- [04-01]: Duplicate App Settings node for callback branch -- /start and /callback are separate n8n executions
+- [04-01]: All 18 Fortnox scopes hardcoded per AUTH-08 to avoid re-authorization
+- [04-01]: Data Table for CSRF state storage (not workflow static data) for reliability on n8n Cloud
+- [04-01]: Omitted access_type=offline -- consent only captures TenantId, client_credentials handles API access
 
 ### Pending Todos
 
@@ -91,7 +97,7 @@ None yet.
 ### Blockers/Concerns
 
 - Phase 1: `preAuthentication` pattern reliability in current n8n versions needs validation. Fallback: manual token fetch in `execute()`.
-- Phase 4: n8n webhook workflow for OAuth callback -- JWT decoding without external libraries needs investigation.
+- Phase 4: RESOLVED -- JWT decoding uses Buffer.from(token.split('.')[1], 'base64').toString() in Code node, no external libraries needed.
 
 ### Quick Tasks Completed
 
@@ -102,5 +108,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 03-03-PLAN.md (Phase 3 Complete)
+Stopped at: Completed 04-01-PLAN.md (Phase 4 Complete)
 Resume file: None
