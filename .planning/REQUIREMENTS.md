@@ -31,18 +31,18 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Customers
 
-- [ ] **CUST-01**: User can create a customer with name, email, and address fields
-- [ ] **CUST-02**: User can retrieve a single customer by CustomerNumber
-- [ ] **CUST-03**: User can list customers with pagination and lastmodified filter
-- [ ] **CUST-04**: User can update a customer record
+- [x] **CUST-01**: User can create a customer with name, email, and address fields
+- [x] **CUST-02**: User can retrieve a single customer by CustomerNumber
+- [x] **CUST-03**: User can list customers with pagination and lastmodified filter
+- [x] **CUST-04**: User can update a customer record
 
 ### Articles
 
-- [ ] **ART-01**: User can create an article with ArticleNumber, description, and pricing
-- [ ] **ART-02**: User can retrieve a single article by ArticleNumber
-- [ ] **ART-03**: User can list articles with pagination
-- [ ] **ART-04**: User can update an article
-- [ ] **ART-05**: User can delete an article
+- [x] **ART-01**: User can create an article with ArticleNumber, description, and pricing
+- [x] **ART-02**: User can retrieve a single article by ArticleNumber
+- [x] **ART-03**: User can list articles with pagination
+- [x] **ART-04**: User can update an article
+- [x] **ART-05**: User can delete an article
 
 ### Orders
 
@@ -122,15 +122,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | INV-06 | Phase 2 | Complete |
 | INV-07 | Phase 2 | Complete |
 | INV-08 | Phase 2 | Complete |
-| CUST-01 | Phase 3 | Pending |
-| CUST-02 | Phase 3 | Pending |
-| CUST-03 | Phase 3 | Pending |
-| CUST-04 | Phase 3 | Pending |
-| ART-01 | Phase 3 | Pending |
-| ART-02 | Phase 3 | Pending |
-| ART-03 | Phase 3 | Pending |
-| ART-04 | Phase 3 | Pending |
-| ART-05 | Phase 3 | Pending |
+| CUST-01 | Phase 3 | Complete |
+| CUST-02 | Phase 3 | Complete |
+| CUST-03 | Phase 3 | Complete |
+| CUST-04 | Phase 3 | Complete |
+| ART-01 | Phase 3 | Complete |
+| ART-02 | Phase 3 | Complete |
+| ART-03 | Phase 3 | Complete |
+| ART-04 | Phase 3 | Complete |
+| ART-05 | Phase 3 | Complete |
 | ORD-01 | Phase 3 | Complete |
 | ORD-02 | Phase 3 | Complete |
 | ORD-03 | Phase 3 | Complete |
