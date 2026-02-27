@@ -11,8 +11,11 @@ import type {
 } from 'n8n-workflow';
 import { NodeConnectionTypes } from 'n8n-workflow';
 
+import { articleFields, articleOperations } from './ArticleDescription';
+import { customerFields, customerOperations } from './CustomerDescription';
 import { fortnoxApiRequest, fortnoxApiRequestAllItems } from './GenericFunctions';
 import { invoiceFields, invoiceOperations } from './InvoiceDescription';
+import { orderFields, orderOperations } from './OrderDescription';
 
 export class Fortnox implements INodeType {
 	description: INodeTypeDescription = {
@@ -44,14 +47,32 @@ export class Fortnox implements INodeType {
 				noDataExpression: true,
 				options: [
 					{
+						name: 'Article',
+						value: 'article',
+					},
+					{
+						name: 'Customer',
+						value: 'customer',
+					},
+					{
 						name: 'Invoice',
 						value: 'invoice',
+					},
+					{
+						name: 'Order',
+						value: 'order',
 					},
 				],
 				default: 'invoice',
 			},
+			...articleOperations,
+			...articleFields,
+			...customerOperations,
+			...customerFields,
 			...invoiceOperations,
 			...invoiceFields,
+			...orderOperations,
+			...orderFields,
 		],
 	};
 
@@ -268,6 +289,252 @@ export class Fortnox implements INodeType {
 							this,
 							'GET',
 							`/3/invoices/${documentNumber}/email`,
+						);
+						responseData = response.Invoice as IDataObject;
+					}
+				}
+
+				if (resource === 'article') {
+					if (operation === 'create') {
+						const description = this.getNodeParameter('description', i) as string;
+						const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
+						const body: IDataObject = { Article: { Description: description } as IDataObject };
+						const articleBody = body.Article as IDataObject;
+						for (const key of Object.keys(additionalFields)) {
+							if (additionalFields[key] !== '') {
+								articleBody[key] = additionalFields[key];
+							}
+						}
+						const response = await fortnoxApiRequest.call(this, 'POST', '/3/articles', body);
+						responseData = response.Article as IDataObject;
+					}
+
+					if (operation === 'get') {
+						const articleNumber = this.getNodeParameter('articleNumber', i) as string;
+						const response = await fortnoxApiRequest.call(this, 'GET', `/3/articles/${articleNumber}`);
+						responseData = response.Article as IDataObject;
+					}
+
+					if (operation === 'getMany') {
+						const returnAll = this.getNodeParameter('returnAll', i) as boolean;
+						const filters = this.getNodeParameter('filters', i) as IDataObject;
+						const qs: IDataObject = {};
+						for (const key of Object.keys(filters)) {
+							if (filters[key] !== '') {
+								qs[key] = filters[key];
+							}
+						}
+						if (returnAll) {
+							responseData = await fortnoxApiRequestAllItems.call(
+								this,
+								'GET',
+								'/3/articles',
+								'Articles',
+								{},
+								qs,
+							);
+						} else {
+							const limit = this.getNodeParameter('limit', i) as number;
+							qs.limit = limit;
+							const response = await fortnoxApiRequest.call(this, 'GET', '/3/articles', {}, qs);
+							responseData = response.Articles as IDataObject[];
+						}
+					}
+
+					if (operation === 'update') {
+						const articleNumber = this.getNodeParameter('articleNumber', i) as string;
+						const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
+						const body: IDataObject = { Article: {} as IDataObject };
+						const articleBody = body.Article as IDataObject;
+						for (const key of Object.keys(updateFields)) {
+							if (updateFields[key] !== '') {
+								articleBody[key] = updateFields[key];
+							}
+						}
+						const response = await fortnoxApiRequest.call(
+							this,
+							'PUT',
+							`/3/articles/${articleNumber}`,
+							body,
+						);
+						responseData = response.Article as IDataObject;
+					}
+
+					if (operation === 'delete') {
+						const articleNumber = this.getNodeParameter('articleNumber', i) as string;
+						await fortnoxApiRequest.call(this, 'DELETE', `/3/articles/${articleNumber}`);
+						responseData = { success: true } as IDataObject;
+					}
+				}
+
+				if (resource === 'customer') {
+					if (operation === 'create') {
+						const name = this.getNodeParameter('name', i) as string;
+						const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
+						const body: IDataObject = { Customer: { Name: name } as IDataObject };
+						const customerBody = body.Customer as IDataObject;
+						for (const key of Object.keys(additionalFields)) {
+							if (additionalFields[key] !== '') {
+								customerBody[key] = additionalFields[key];
+							}
+						}
+						const response = await fortnoxApiRequest.call(this, 'POST', '/3/customers', body);
+						responseData = response.Customer as IDataObject;
+					}
+
+					if (operation === 'get') {
+						const customerNumber = this.getNodeParameter('customerNumber', i) as string;
+						const response = await fortnoxApiRequest.call(this, 'GET', `/3/customers/${customerNumber}`);
+						responseData = response.Customer as IDataObject;
+					}
+
+					if (operation === 'getMany') {
+						const returnAll = this.getNodeParameter('returnAll', i) as boolean;
+						const filters = this.getNodeParameter('filters', i) as IDataObject;
+						const qs: IDataObject = {};
+						for (const key of Object.keys(filters)) {
+							if (filters[key] !== '') {
+								qs[key] = filters[key];
+							}
+						}
+						if (returnAll) {
+							responseData = await fortnoxApiRequestAllItems.call(
+								this,
+								'GET',
+								'/3/customers',
+								'Customers',
+								{},
+								qs,
+							);
+						} else {
+							const limit = this.getNodeParameter('limit', i) as number;
+							qs.limit = limit;
+							const response = await fortnoxApiRequest.call(this, 'GET', '/3/customers', {}, qs);
+							responseData = response.Customers as IDataObject[];
+						}
+					}
+
+					if (operation === 'update') {
+						const customerNumber = this.getNodeParameter('customerNumber', i) as string;
+						const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
+						const body: IDataObject = { Customer: {} as IDataObject };
+						const customerBody = body.Customer as IDataObject;
+						for (const key of Object.keys(updateFields)) {
+							if (updateFields[key] !== '') {
+								customerBody[key] = updateFields[key];
+							}
+						}
+						const response = await fortnoxApiRequest.call(
+							this,
+							'PUT',
+							`/3/customers/${customerNumber}`,
+							body,
+						);
+						responseData = response.Customer as IDataObject;
+					}
+
+					if (operation === 'delete') {
+						const customerNumber = this.getNodeParameter('customerNumber', i) as string;
+						await fortnoxApiRequest.call(this, 'DELETE', `/3/customers/${customerNumber}`);
+						responseData = { success: true } as IDataObject;
+					}
+				}
+
+				if (resource === 'order') {
+					if (operation === 'create') {
+						const customerNumber = this.getNodeParameter('customerNumber', i) as string;
+						const orderRows = this.getNodeParameter('orderRows', i) as IDataObject;
+						const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
+						const body: IDataObject = {
+							Order: { CustomerNumber: customerNumber } as IDataObject,
+						};
+						const orderBody = body.Order as IDataObject;
+						if (orderRows.row) {
+							orderBody.OrderRows = orderRows.row;
+						}
+						for (const key of Object.keys(additionalFields)) {
+							if (additionalFields[key] !== '') {
+								orderBody[key] = additionalFields[key];
+							}
+						}
+						const response = await fortnoxApiRequest.call(this, 'POST', '/3/orders', body);
+						responseData = response.Order as IDataObject;
+					}
+
+					if (operation === 'get') {
+						const documentNumber = this.getNodeParameter('documentNumber', i) as string;
+						const response = await fortnoxApiRequest.call(this, 'GET', `/3/orders/${documentNumber}`);
+						responseData = response.Order as IDataObject;
+					}
+
+					if (operation === 'getMany') {
+						const returnAll = this.getNodeParameter('returnAll', i) as boolean;
+						const filters = this.getNodeParameter('filters', i) as IDataObject;
+						const qs: IDataObject = {};
+						for (const key of Object.keys(filters)) {
+							if (filters[key] !== '') {
+								qs[key] = filters[key];
+							}
+						}
+						if (returnAll) {
+							responseData = await fortnoxApiRequestAllItems.call(
+								this,
+								'GET',
+								'/3/orders',
+								'Orders',
+								{},
+								qs,
+							);
+						} else {
+							const limit = this.getNodeParameter('limit', i) as number;
+							qs.limit = limit;
+							const response = await fortnoxApiRequest.call(this, 'GET', '/3/orders', {}, qs);
+							responseData = response.Orders as IDataObject[];
+						}
+					}
+
+					if (operation === 'update') {
+						const documentNumber = this.getNodeParameter('documentNumber', i) as string;
+						const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
+						const body: IDataObject = { Order: {} as IDataObject };
+						const orderBody = body.Order as IDataObject;
+						// Handle OrderRows nested fixedCollection
+						if (updateFields.OrderRows) {
+							const rows = updateFields.OrderRows as IDataObject;
+							orderBody.OrderRows = rows.row;
+							delete updateFields.OrderRows;
+						}
+						for (const key of Object.keys(updateFields)) {
+							if (updateFields[key] !== '') {
+								orderBody[key] = updateFields[key];
+							}
+						}
+						const response = await fortnoxApiRequest.call(
+							this,
+							'PUT',
+							`/3/orders/${documentNumber}`,
+							body,
+						);
+						responseData = response.Order as IDataObject;
+					}
+
+					if (operation === 'cancel') {
+						const documentNumber = this.getNodeParameter('documentNumber', i) as string;
+						const response = await fortnoxApiRequest.call(
+							this,
+							'PUT',
+							`/3/orders/${documentNumber}/cancel`,
+						);
+						responseData = response.Order as IDataObject;
+					}
+
+					if (operation === 'createInvoice') {
+						const documentNumber = this.getNodeParameter('documentNumber', i) as string;
+						// IMPORTANT: createinvoice returns { Invoice: {...} }, NOT { Order: {...} }
+						const response = await fortnoxApiRequest.call(
+							this,
+							'PUT',
+							`/3/orders/${documentNumber}/createinvoice`,
 						);
 						responseData = response.Invoice as IDataObject;
 					}
