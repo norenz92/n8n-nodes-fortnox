@@ -55,7 +55,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Company Information
 
-- [ ] **COMP-01**: User can retrieve company information (useful for credential validation and multi-tenant routing)
+- [x] **COMP-01**: User can retrieve company information (useful for credential validation and multi-tenant routing)
 
 ### Operational
 
@@ -137,7 +137,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ORD-04 | Phase 3 | Pending |
 | ORD-05 | Phase 3 | Pending |
 | ORD-06 | Phase 3 | Pending |
-| COMP-01 | Phase 1 | Pending |
+| COMP-01 | Phase 1 | Complete |
 | OPS-01 | Phase 2 | Pending |
 | OPS-02 | Phase 2 | Pending |
 | OPS-03 | Phase 2 | Pending |
