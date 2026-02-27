@@ -46,12 +46,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Orders
 
-- [ ] **ORD-01**: User can create a sales order with line items and customer reference
-- [ ] **ORD-02**: User can retrieve a single order by DocumentNumber
-- [ ] **ORD-03**: User can list orders with pagination and filters (date range)
-- [ ] **ORD-04**: User can update an order
-- [ ] **ORD-05**: User can convert an order to an invoice
-- [ ] **ORD-06**: User can cancel an order
+- [x] **ORD-01**: User can create a sales order with line items and customer reference
+- [x] **ORD-02**: User can retrieve a single order by DocumentNumber
+- [x] **ORD-03**: User can list orders with pagination and filters (date range)
+- [x] **ORD-04**: User can update an order
+- [x] **ORD-05**: User can convert an order to an invoice
+- [x] **ORD-06**: User can cancel an order
 
 ### Company Information
 
@@ -131,12 +131,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ART-03 | Phase 3 | Pending |
 | ART-04 | Phase 3 | Pending |
 | ART-05 | Phase 3 | Pending |
-| ORD-01 | Phase 3 | Pending |
-| ORD-02 | Phase 3 | Pending |
-| ORD-03 | Phase 3 | Pending |
-| ORD-04 | Phase 3 | Pending |
-| ORD-05 | Phase 3 | Pending |
-| ORD-06 | Phase 3 | Pending |
+| ORD-01 | Phase 3 | Complete |
+| ORD-02 | Phase 3 | Complete |
+| ORD-03 | Phase 3 | Complete |
+| ORD-04 | Phase 3 | Complete |
+| ORD-05 | Phase 3 | Complete |
+| ORD-06 | Phase 3 | Complete |
 | COMP-01 | Phase 1 | Complete |
 | OPS-01 | Phase 2 | Complete |
 | OPS-02 | Phase 2 | Complete |
