@@ -1,8 +1,10 @@
 {
 	"name": "n8n-nodes-fortnox",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "n8n community node for Fortnox accounting API",
-	"keywords": ["n8n-community-node-package"],
+	"keywords": [
+		"n8n-community-node-package"
+	],
 	"license": "MIT",
 	"author": {
 		"name": "Adam Noren"
@@ -15,7 +17,9 @@
 	"bugs": {
 		"url": "https://github.com/norenz92/n8n-nodes-fortnox/issues"
 	},
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"scripts": {
 		"build": "n8n-node build",
 		"dev": "n8n-node dev",
@@ -27,8 +31,12 @@
 	"n8n": {
 		"n8nNodesApiVersion": 1,
 		"strict": true,
-		"credentials": ["dist/credentials/FortnoxApi.credentials.js"],
-		"nodes": ["dist/nodes/Fortnox/Fortnox.node.js"]
+		"credentials": [
+			"dist/credentials/FortnoxApi.credentials.js"
+		],
+		"nodes": [
+			"dist/nodes/Fortnox/Fortnox.node.js"
+		]
 	},
 	"peerDependencies": {
 		"n8n-workflow": "*"
