@@ -12,10 +12,10 @@ This roadmap delivers a complete n8n community node package for the Fortnox acco
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Project Scaffold + Credential System** - Working npm package skeleton with Fortnox client credentials auth and credential test endpoint
-- [ ] **Phase 2: Invoice Resource** - Complete Invoice operations proving the declarative node pattern with pagination, error handling, and rate limiting
+- [x] **Phase 1: Project Scaffold + Credential System** - Working npm package skeleton with Fortnox client credentials auth and credential test endpoint
+- [x] **Phase 2: Invoice Resource** - Complete Invoice operations proving the declarative node pattern with pagination, error handling, and rate limiting
 - [x] **Phase 3: Customer, Article, and Order Resources** - Full CRUD and action operations for all remaining core resources using the proven pattern
-- [ ] **Phase 4: OAuth Consent Onboarding** - Shareable authorization link for client self-service consent and automatic TenantId capture
+- [x] **Phase 4: OAuth Consent Onboarding** - Shareable authorization link for client self-service consent and automatic TenantId capture
 
 ## Phase Details
 
@@ -79,7 +79,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 04-01-PLAN.md — Complete OAuth consent onboarding workflow (JSON template) with /start and /callback webhooks, JWT TenantId extraction, Data Table storage, Slack notification, and npm package bundling
+- [x] 04-01-PLAN.md — Complete OAuth consent onboarding workflow (JSON template) with /start and /callback webhooks, JWT TenantId extraction, Data Table storage, Slack notification, and npm package bundling
 
 ## Progress
 
@@ -92,4 +92,4 @@ Note: Phase 4 depends on Phase 1 (not Phase 3). Phases 2-3 and Phase 4 could the
 | 1. Project Scaffold + Credential System | 2/2 | Complete | 2026-02-27 |
 | 2. Invoice Resource | 2/2 | Complete | 2026-02-27 |
 | 3. Customer, Article, and Order Resources | 0/3 | Complete    | 2026-02-27 |
-| 4. OAuth Consent Onboarding | 0/1 | Not started | - |
+| 4. OAuth Consent Onboarding | 1/1 | Complete | 2026-02-27 |
