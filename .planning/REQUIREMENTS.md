@@ -97,7 +97,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | Contract management | Low demand for automation |
 | Archive/Inbox file management | Complex binary handling, orthogonal to core accounting |
 | Customer-facing portal/dashboard | Shareable auth link is sufficient for agency model |
-| Real-time webhooks/triggers | Fortnox does not offer webhooks — use polling |
+| Real-time webhooks/triggers | Fortnox does not offer webhooks -- use polling |
 | All 60+ Fortnox resources | Focus on 4-8 that cover 95% of use cases |
 
 ## Traceability
@@ -106,49 +106,49 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | — | Pending |
-| AUTH-02 | — | Pending |
-| AUTH-03 | — | Pending |
-| AUTH-04 | — | Pending |
-| AUTH-05 | — | Pending |
-| AUTH-06 | — | Pending |
-| AUTH-07 | — | Pending |
-| AUTH-08 | — | Pending |
-| INV-01 | — | Pending |
-| INV-02 | — | Pending |
-| INV-03 | — | Pending |
-| INV-04 | — | Pending |
-| INV-05 | — | Pending |
-| INV-06 | — | Pending |
-| INV-07 | — | Pending |
-| INV-08 | — | Pending |
-| CUST-01 | — | Pending |
-| CUST-02 | — | Pending |
-| CUST-03 | — | Pending |
-| CUST-04 | — | Pending |
-| ART-01 | — | Pending |
-| ART-02 | — | Pending |
-| ART-03 | — | Pending |
-| ART-04 | — | Pending |
-| ART-05 | — | Pending |
-| ORD-01 | — | Pending |
-| ORD-02 | — | Pending |
-| ORD-03 | — | Pending |
-| ORD-04 | — | Pending |
-| ORD-05 | — | Pending |
-| ORD-06 | — | Pending |
-| COMP-01 | — | Pending |
-| OPS-01 | — | Pending |
-| OPS-02 | — | Pending |
-| OPS-03 | — | Pending |
-| OPS-04 | — | Pending |
-| OPS-05 | — | Pending |
+| AUTH-01 | Phase 1 | Pending |
+| AUTH-02 | Phase 1 | Pending |
+| AUTH-03 | Phase 1 | Pending |
+| AUTH-04 | Phase 1 | Pending |
+| AUTH-05 | Phase 4 | Pending |
+| AUTH-06 | Phase 4 | Pending |
+| AUTH-07 | Phase 4 | Pending |
+| AUTH-08 | Phase 1 | Pending |
+| INV-01 | Phase 2 | Pending |
+| INV-02 | Phase 2 | Pending |
+| INV-03 | Phase 2 | Pending |
+| INV-04 | Phase 2 | Pending |
+| INV-05 | Phase 2 | Pending |
+| INV-06 | Phase 2 | Pending |
+| INV-07 | Phase 2 | Pending |
+| INV-08 | Phase 2 | Pending |
+| CUST-01 | Phase 3 | Pending |
+| CUST-02 | Phase 3 | Pending |
+| CUST-03 | Phase 3 | Pending |
+| CUST-04 | Phase 3 | Pending |
+| ART-01 | Phase 3 | Pending |
+| ART-02 | Phase 3 | Pending |
+| ART-03 | Phase 3 | Pending |
+| ART-04 | Phase 3 | Pending |
+| ART-05 | Phase 3 | Pending |
+| ORD-01 | Phase 3 | Pending |
+| ORD-02 | Phase 3 | Pending |
+| ORD-03 | Phase 3 | Pending |
+| ORD-04 | Phase 3 | Pending |
+| ORD-05 | Phase 3 | Pending |
+| ORD-06 | Phase 3 | Pending |
+| COMP-01 | Phase 1 | Pending |
+| OPS-01 | Phase 2 | Pending |
+| OPS-02 | Phase 2 | Pending |
+| OPS-03 | Phase 2 | Pending |
+| OPS-04 | Phase 1 | Pending |
+| OPS-05 | Phase 1 | Pending |
 
 **Coverage:**
 - v1 requirements: 37 total
-- Mapped to phases: 0
-- Unmapped: 37 ⚠️
+- Mapped to phases: 37
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-27*
-*Last updated: 2026-02-27 after initial definition*
+*Last updated: 2026-02-27 after roadmap creation*
