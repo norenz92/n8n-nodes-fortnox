@@ -20,14 +20,14 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Invoices
 
-- [ ] **INV-01**: User can create an invoice with line items, customer reference, due date, and currency
-- [ ] **INV-02**: User can retrieve a single invoice by DocumentNumber
-- [ ] **INV-03**: User can list invoices with pagination and filters (unpaid, unbooked, cancelled, date range)
-- [ ] **INV-04**: User can update a draft (unbooked) invoice
-- [ ] **INV-05**: User can bookkeep an invoice (finalize in accounting)
-- [ ] **INV-06**: User can cancel an invoice
-- [ ] **INV-07**: User can credit an invoice (creates linked credit note)
-- [ ] **INV-08**: User can send an invoice via email
+- [x] **INV-01**: User can create an invoice with line items, customer reference, due date, and currency
+- [x] **INV-02**: User can retrieve a single invoice by DocumentNumber
+- [x] **INV-03**: User can list invoices with pagination and filters (unpaid, unbooked, cancelled, date range)
+- [x] **INV-04**: User can update a draft (unbooked) invoice
+- [x] **INV-05**: User can bookkeep an invoice (finalize in accounting)
+- [x] **INV-06**: User can cancel an invoice
+- [x] **INV-07**: User can credit an invoice (creates linked credit note)
+- [x] **INV-08**: User can send an invoice via email
 
 ### Customers
 
@@ -59,9 +59,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Operational
 
-- [ ] **OPS-01**: All list operations support "Return All" toggle with automatic pagination
-- [ ] **OPS-02**: Fortnox error messages are surfaced clearly with English context
-- [ ] **OPS-03**: Rate limiting (25 req/5s per client) handled with retry and backoff on HTTP 429
+- [x] **OPS-01**: All list operations support "Return All" toggle with automatic pagination
+- [x] **OPS-02**: Fortnox error messages are surfaced clearly with English context
+- [x] **OPS-03**: Rate limiting (25 req/5s per client) handled with retry and backoff on HTTP 429
 - [x] **OPS-04**: Node follows n8n community node conventions (TypeScript, proper descriptions, additional fields pattern)
 - [x] **OPS-05**: Package is publishable to npm as `n8n-nodes-fortnox`
 
@@ -114,14 +114,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-06 | Phase 4 | Pending |
 | AUTH-07 | Phase 4 | Pending |
 | AUTH-08 | Phase 1 | Complete |
-| INV-01 | Phase 2 | Pending |
-| INV-02 | Phase 2 | Pending |
-| INV-03 | Phase 2 | Pending |
-| INV-04 | Phase 2 | Pending |
-| INV-05 | Phase 2 | Pending |
-| INV-06 | Phase 2 | Pending |
-| INV-07 | Phase 2 | Pending |
-| INV-08 | Phase 2 | Pending |
+| INV-01 | Phase 2 | Complete |
+| INV-02 | Phase 2 | Complete |
+| INV-03 | Phase 2 | Complete |
+| INV-04 | Phase 2 | Complete |
+| INV-05 | Phase 2 | Complete |
+| INV-06 | Phase 2 | Complete |
+| INV-07 | Phase 2 | Complete |
+| INV-08 | Phase 2 | Complete |
 | CUST-01 | Phase 3 | Pending |
 | CUST-02 | Phase 3 | Pending |
 | CUST-03 | Phase 3 | Pending |
@@ -138,9 +138,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ORD-05 | Phase 3 | Pending |
 | ORD-06 | Phase 3 | Pending |
 | COMP-01 | Phase 1 | Complete |
-| OPS-01 | Phase 2 | Pending |
-| OPS-02 | Phase 2 | Pending |
-| OPS-03 | Phase 2 | Pending |
+| OPS-01 | Phase 2 | Complete |
+| OPS-02 | Phase 2 | Complete |
+| OPS-03 | Phase 2 | Complete |
 | OPS-04 | Phase 1 | Complete |
 | OPS-05 | Phase 1 | Complete |
 
