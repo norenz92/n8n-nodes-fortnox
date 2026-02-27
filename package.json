@@ -1,0 +1,32 @@
+{
+	"name": "n8n-nodes-fortnox",
+	"version": "0.1.0",
+	"description": "n8n community node for Fortnox accounting API",
+	"keywords": ["n8n-community-node-package"],
+	"license": "MIT",
+	"files": ["dist"],
+	"scripts": {
+		"build": "n8n-node build",
+		"dev": "n8n-node dev",
+		"lint": "n8n-node lint",
+		"lint:fix": "n8n-node lint --fix",
+		"release": "n8n-node release",
+		"prepublishOnly": "n8n-node prerelease"
+	},
+	"n8n": {
+		"n8nNodesApiVersion": 1,
+		"strict": true,
+		"credentials": ["dist/credentials/FortnoxApi.credentials.js"],
+		"nodes": ["dist/nodes/Fortnox/Fortnox.node.js"]
+	},
+	"peerDependencies": {
+		"n8n-workflow": "*"
+	},
+	"devDependencies": {
+		"@n8n/node-cli": "*",
+		"eslint": "9.32.0",
+		"prettier": "3.6.2",
+		"release-it": "^19.0.4",
+		"typescript": "5.9.2"
+	}
+}
