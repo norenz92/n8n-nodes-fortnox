@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [ ] **Phase 1: Project Scaffold + Credential System** - Working npm package skeleton with Fortnox client credentials auth and credential test endpoint
 - [ ] **Phase 2: Invoice Resource** - Complete Invoice operations proving the declarative node pattern with pagination, error handling, and rate limiting
-- [ ] **Phase 3: Customer, Article, and Order Resources** - Full CRUD and action operations for all remaining core resources using the proven pattern
+- [x] **Phase 3: Customer, Article, and Order Resources** - Full CRUD and action operations for all remaining core resources using the proven pattern
 - [ ] **Phase 4: OAuth Consent Onboarding** - Shareable authorization link for client self-service consent and automatic TenantId capture
 
 ## Phase Details
@@ -64,9 +64,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — CustomerDescription.ts + ArticleDescription.ts (full field coverage, operations, filters)
-- [ ] 03-02-PLAN.md — OrderDescription.ts (operations, OrderRows, cancel, createInvoice actions)
-- [ ] 03-03-PLAN.md — Wire all three resources into Fortnox.node.ts execute() + build verification
+- [x] 03-01-PLAN.md — CustomerDescription.ts + ArticleDescription.ts (full field coverage, operations, filters)
+- [x] 03-02-PLAN.md — OrderDescription.ts (operations, OrderRows, cancel, createInvoice actions)
+- [x] 03-03-PLAN.md — Wire all three resources into Fortnox.node.ts execute() + build verification
 
 ### Phase 4: OAuth Consent Onboarding
 **Goal**: Clients can authorize their Fortnox account through a shareable link without ever needing n8n access, and the agency can immediately create credentials from the captured TenantId
