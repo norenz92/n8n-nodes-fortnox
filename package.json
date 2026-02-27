@@ -7,6 +7,14 @@
 	"author": {
 		"name": "Adam Noren"
 	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/norenz92/n8n-nodes-fortnox.git"
+	},
+	"homepage": "https://github.com/norenz92/n8n-nodes-fortnox",
+	"bugs": {
+		"url": "https://github.com/norenz92/n8n-nodes-fortnox/issues"
+	},
 	"files": ["dist"],
 	"scripts": {
 		"build": "n8n-node build",
