@@ -113,7 +113,6 @@ const commonArticleFields: INodeProperties[] = [
 		name: 'EUVATAccount',
 		type: 'number',
 		default: 0,
-		description: 'EU VAT account',
 	},
 	{
 		displayName: 'Expired',
@@ -141,7 +140,7 @@ const commonArticleFields: INodeProperties[] = [
 		name: 'Housework',
 		type: 'boolean',
 		default: false,
-		description: 'ROT/RUT housework article',
+		description: 'Whether this is a ROT/RUT housework article',
 	},
 	{
 		displayName: 'Housework Type',
@@ -162,7 +161,6 @@ const commonArticleFields: INodeProperties[] = [
 		name: 'ManufacturerArticleNumber',
 		type: 'string',
 		default: '',
-		description: 'Manufacturer article number',
 	},
 	{
 		displayName: 'Note',
@@ -183,7 +181,6 @@ const commonArticleFields: INodeProperties[] = [
 		name: 'PurchasePrice',
 		type: 'number',
 		default: 0,
-		description: 'Purchase price',
 	},
 	{
 		displayName: 'Quantity In Stock',

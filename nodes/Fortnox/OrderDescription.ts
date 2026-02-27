@@ -109,7 +109,6 @@ const orderRowFields: INodeProperties[] = [
 			{ name: 'Percent', value: 'PERCENT' },
 		],
 		default: 'PERCENT',
-		description: 'Discount type',
 	},
 	{
 		displayName: 'Housework',
@@ -249,7 +248,6 @@ const commonOrderFields: INodeProperties[] = [
 		name: 'CurrencyUnit',
 		type: 'number',
 		default: 0,
-		description: 'Currency unit',
 	},
 	{
 		displayName: 'Customer Name',
@@ -263,28 +261,24 @@ const commonOrderFields: INodeProperties[] = [
 		name: 'DeliveryAddress1',
 		type: 'string',
 		default: '',
-		description: 'Delivery address line 1',
 	},
 	{
 		displayName: 'Delivery Address Line 2',
 		name: 'DeliveryAddress2',
 		type: 'string',
 		default: '',
-		description: 'Delivery address line 2',
 	},
 	{
 		displayName: 'Delivery City',
 		name: 'DeliveryCity',
 		type: 'string',
 		default: '',
-		description: 'Delivery city',
 	},
 	{
 		displayName: 'Delivery Country',
 		name: 'DeliveryCountry',
 		type: 'string',
 		default: '',
-		description: 'Delivery country',
 	},
 	{
 		displayName: 'Delivery Date',
@@ -312,14 +306,12 @@ const commonOrderFields: INodeProperties[] = [
 		name: 'ExternalInvoiceReference1',
 		type: 'string',
 		default: '',
-		description: 'External invoice reference 1',
 	},
 	{
 		displayName: 'External Invoice Reference 2',
 		name: 'ExternalInvoiceReference2',
 		type: 'string',
 		default: '',
-		description: 'External invoice reference 2',
 	},
 	{
 		displayName: 'Freight',

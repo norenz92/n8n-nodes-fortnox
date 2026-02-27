@@ -397,7 +397,6 @@ const commonCustomerFields: INodeProperties[] = [
 			{ name: 'SE VAT', value: 'SEVAT' },
 		],
 		default: 'SEVAT',
-		description: 'VAT type',
 	},
 	{
 		displayName: 'Visiting Address',
