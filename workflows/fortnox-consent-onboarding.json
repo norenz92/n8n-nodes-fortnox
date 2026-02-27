@@ -1,0 +1,634 @@
+{
+  "name": "Fortnox Consent Onboarding",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Fortnox Consent Onboarding\n\n### Setup Instructions\n1. **Create two Data Tables** in n8n:\n   - \"Consent States\" with columns: `state` (text), `createdAt` (text), `redirectUri` (text)\n   - \"Fortnox Consents\" with columns: `TenantId` (text), `Company Name` (text), `Scopes Granted` (text), `Timestamp` (text)\n2. **Fill in ClientId and ClientSecret** in BOTH \"App Settings\" nodes (one in the Start flow, one in the Callback flow) from your Fortnox Developer Portal\n3. **Register redirect URI** in Fortnox Developer Portal:\n   `https://<your-n8n-host>/webhook/fortnox-consent/callback`\n4. **Connect your Slack credential** to the \"Notify Agency\" node (optional)\n5. **Activate this workflow**\n6. **Share this link** with clients:\n   `https://<your-n8n-host>/webhook/fortnox-consent/start`\n\n### How it works\nClients click the link and are redirected to the Fortnox OAuth consent screen. After they authorize, the workflow captures their TenantId from the JWT access token and stores it in the \"Fortnox Consents\" Data Table. You then copy the TenantId to create a new FortnoxApi credential in n8n.\n\nThe workflow also verifies the consent by calling the Fortnox Company Information API, sends a Slack notification with the company name and TenantId, and shows the client a friendly success page.",
+        "width": 560,
+        "height": 520,
+        "color": 4
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000001",
+      "name": "Setup Instructions",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [100, 60]
+    },
+    {
+      "parameters": {
+        "content": "### Start Flow\nClient visits this URL and is immediately redirected to the Fortnox OAuth consent screen. A CSRF state token is generated and stored for validation on callback.",
+        "width": 350,
+        "height": 120,
+        "color": 5
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000002",
+      "name": "Start Flow",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [700, 60]
+    },
+    {
+      "parameters": {
+        "content": "### Callback Flow\nFortnox redirects the client here after consent. The workflow validates the CSRF state, exchanges the authorization code for an access token, decodes the JWT, verifies consent, and stores the TenantId.",
+        "width": 350,
+        "height": 140,
+        "color": 5
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000003",
+      "name": "Callback Flow",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [700, 560]
+    },
+    {
+      "parameters": {
+        "content": "### TenantId Capture\nThe TenantId is extracted from the JWT access token payload (the `tenantId` claim). It is verified against the Fortnox Company Information API (DatabaseNumber field). Copy the TenantId from the \"Fortnox Consents\" Data Table to create a new FortnoxApi credential in n8n.",
+        "width": 350,
+        "height": 140,
+        "color": 6
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000004",
+      "name": "TenantId Capture",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [2200, 560]
+    },
+    {
+      "parameters": {
+        "content": "### Error Handling\nAny failure during the callback flow (invalid state, expired token, failed token exchange, etc.) routes the client to a friendly error page. No technical details are exposed to the client.",
+        "width": 350,
+        "height": 120,
+        "color": 2
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000005",
+      "name": "Error Handling",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [2200, 1100]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "fortnox-consent/start",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000010",
+      "name": "Client Visits Start URL",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [720, 240],
+      "webhookId": "fortnox-consent-start"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1-assign-01",
+              "name": "clientId",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "a1-assign-02",
+              "name": "clientSecret",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000011",
+      "name": "App Settings",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [940, 240]
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\n\nconst state = crypto.randomBytes(32).toString('hex');\nconst headers = $('Client Visits Start URL').first().json.headers;\nconst host = headers.host;\nconst protocol = headers['x-forwarded-proto'] || 'https';\nconst redirectUri = `${protocol}://${host}/webhook/fortnox-consent/callback`;\n\nconst clientId = $('App Settings').first().json.clientId;\n\nconst scopes = 'archive article assets bookkeeping companyinformation costcenter currency customer invoice offer order price print project salary settings supplier supplierinvoice';\n\nconst authUrl = new URL('https://apps.fortnox.se/oauth-v1/auth');\nauthUrl.searchParams.set('client_id', clientId);\nauthUrl.searchParams.set('redirect_uri', redirectUri);\nauthUrl.searchParams.set('response_type', 'code');\nauthUrl.searchParams.set('scope', scopes);\nauthUrl.searchParams.set('state', state);\nauthUrl.searchParams.set('account_type', 'service');\n\nreturn [{\n  json: {\n    authorizationUrl: authUrl.toString(),\n    state,\n    redirectUri,\n    createdAt: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000012",
+      "name": "Generate State and Auth URL",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1160, 240]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "tableName": "Consent States",
+        "dataToInsert": {
+          "values": [
+            {
+              "column": "state",
+              "value": "={{ $json.state }}"
+            },
+            {
+              "column": "createdAt",
+              "value": "={{ $json.createdAt }}"
+            },
+            {
+              "column": "redirectUri",
+              "value": "={{ $json.redirectUri }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000013",
+      "name": "Save State Token",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [1380, 240]
+    },
+    {
+      "parameters": {
+        "respondWith": "redirect",
+        "redirectURL": "={{ $('Generate State and Auth URL').first().json.authorizationUrl }}",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000014",
+      "name": "Redirect to Fortnox",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1600, 240]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "fortnox-consent/callback",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000020",
+      "name": "Fortnox OAuth Callback",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [720, 740],
+      "webhookId": "fortnox-consent-callback"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1-assign-03",
+              "name": "clientId",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "a1-assign-04",
+              "name": "clientSecret",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000040",
+      "name": "App Settings1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [940, 920]
+    },
+    {
+      "parameters": {
+        "jsCode": "const webhookData = $('Fortnox OAuth Callback').first().json;\nconst query = webhookData.query;\n\n// Check if Fortnox returned an error (user denied consent)\nif (query.error) {\n  throw new Error(`Fortnox returned error: ${query.error}`);\n}\n\nif (!query.code) {\n  throw new Error('Missing authorization code in callback');\n}\n\nif (!query.state) {\n  throw new Error('Missing state parameter in callback');\n}\n\nconst headers = webhookData.headers;\nconst host = headers.host;\nconst protocol = headers['x-forwarded-proto'] || 'https';\nconst redirectUri = `${protocol}://${host}/webhook/fortnox-consent/callback`;\n\nreturn [{\n  json: {\n    code: query.code,\n    state: query.state,\n    redirectUri\n  }\n}];"
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000021",
+      "name": "Validate Callback Params",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1160, 740],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "tableName": "Consent States",
+        "filterType": "string",
+        "lookupColumn": "state",
+        "lookupValue": "={{ $json.state }}",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000022",
+      "name": "Lookup State Token",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [1380, 740]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst callbackData = $('Validate Callback Params').first().json;\n\nif (!items || items.length === 0) {\n  throw new Error('Invalid state parameter - no matching token found');\n}\n\nconst stateRecord = items[0].json;\nconst createdAt = new Date(stateRecord.createdAt).getTime();\nconst now = Date.now();\nconst ageMs = now - createdAt;\nconst maxAgeMs = 10 * 60 * 1000; // 10 minutes\n\nif (ageMs > maxAgeMs) {\n  throw new Error('State token has expired (older than 10 minutes)');\n}\n\nreturn [{\n  json: {\n    code: callbackData.code,\n    redirectUri: callbackData.redirectUri,\n    state: callbackData.state\n  }\n}];"
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000023",
+      "name": "Verify State Token",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1600, 740],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const clientId = $('App Settings1').first().json.clientId;\nconst clientSecret = $('App Settings1').first().json.clientSecret;\nconst basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');\n\nreturn [{\n  json: {\n    ...$json,\n    authHeader: `Basic ${basicAuth}`\n  }\n}];"
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000024",
+      "name": "Build Auth Header",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1820, 740]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://apps.fortnox.se/oauth-v1/token",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $json.authHeader }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/x-www-form-urlencoded",
+        "body": "=grant_type=authorization_code&code={{ $json.code }}&redirect_uri={{ encodeURIComponent($json.redirectUri) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": false
+            }
+          }
+        }
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000025",
+      "name": "Exchange Code for Token",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2040, 740],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const tokenResponse = $json;\n\nif (!tokenResponse.access_token) {\n  throw new Error('Token exchange failed - no access_token in response');\n}\n\nconst accessToken = tokenResponse.access_token;\nconst parts = accessToken.split('.');\nif (parts.length !== 3) {\n  throw new Error('Invalid JWT format in access token');\n}\n\nconst payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());\n\nif (!payload.tenantId) {\n  throw new Error('No tenantId claim found in JWT payload');\n}\n\nreturn [{\n  json: {\n    tenantId: String(payload.tenantId),\n    accessToken,\n    scope: tokenResponse.scope,\n    expiresIn: tokenResponse.expires_in\n  }\n}];"
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000026",
+      "name": "Decode JWT and Extract TenantId",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2260, 740],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.fortnox.se/3/companyinformation",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.accessToken }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": false
+            }
+          }
+        }
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000027",
+      "name": "Verify Consent - Get Company Info",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2480, 740],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const companyInfo = $json.CompanyInformation;\nconst jwtData = $('Decode JWT and Extract TenantId').first().json;\n\nconst companyName = companyInfo ? (companyInfo.CompanyName || 'Unknown Company') : 'Unknown Company';\nconst tenantId = jwtData.tenantId;\nconst scopes = jwtData.scope || '';\nconst timestamp = new Date().toISOString();\n\nreturn [{\n  json: {\n    tenantId,\n    companyName,\n    scopesGranted: scopes,\n    timestamp\n  }\n}];"
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000028",
+      "name": "Prepare Consent Record",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2700, 740]
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "tableName": "Fortnox Consents",
+        "matchingColumn": "TenantId",
+        "dataToInsert": {
+          "values": [
+            {
+              "column": "TenantId",
+              "value": "={{ $json.tenantId }}"
+            },
+            {
+              "column": "Company Name",
+              "value": "={{ $json.companyName }}"
+            },
+            {
+              "column": "Scopes Granted",
+              "value": "={{ $json.scopesGranted }}"
+            },
+            {
+              "column": "Timestamp",
+              "value": "={{ $json.timestamp }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000029",
+      "name": "Store Consent in Table",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [2920, 740]
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "mode": "list",
+          "value": ""
+        },
+        "text": "=:white_check_mark: *New Fortnox Consent*\n*Company:* {{ $('Prepare Consent Record').first().json.companyName }}\n*TenantId:* {{ $('Prepare Consent Record').first().json.tenantId }}\n*Scopes:* {{ $('Prepare Consent Record').first().json.scopesGranted }}\n*Time:* {{ $('Prepare Consent Record').first().json.timestamp }}",
+        "otherOptions": {}
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000030",
+      "name": "Notify Agency",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [3140, 740],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>Authorization Successful</title>\n  <style>\n    * { margin: 0; padding: 0; box-sizing: border-box; }\n    body {\n      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;\n      display: flex; justify-content: center; align-items: center;\n      min-height: 100vh; background: #f8f9fa; color: #333;\n    }\n    .container { text-align: center; padding: 2rem; max-width: 480px; }\n    .icon { font-size: 4rem; margin-bottom: 1rem; }\n    .success { color: #28a745; }\n    h1 { font-size: 1.5rem; margin-bottom: 0.5rem; font-weight: 600; }\n    p { color: #666; font-size: 1rem; line-height: 1.5; }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <div class=\"icon success\">&#10004;</div>\n    <h1>{{ $('Prepare Consent Record').first().json.companyName }} has been authorized</h1>\n    <p>You can close this page.</p>\n  </div>\n</body>\n</html>",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=utf-8"
+              }
+            ]
+          }
+        }
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000031",
+      "name": "Show Success Page",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [3360, 740]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>Authorization Error</title>\n  <style>\n    * { margin: 0; padding: 0; box-sizing: border-box; }\n    body {\n      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;\n      display: flex; justify-content: center; align-items: center;\n      min-height: 100vh; background: #f8f9fa; color: #333;\n    }\n    .container { text-align: center; padding: 2rem; max-width: 480px; }\n    .icon { font-size: 4rem; margin-bottom: 1rem; }\n    .error { color: #dc3545; }\n    h1 { font-size: 1.5rem; margin-bottom: 0.5rem; font-weight: 600; }\n    p { color: #666; font-size: 1rem; line-height: 1.5; }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <div class=\"icon error\">&#10008;</div>\n    <h1>Something went wrong</h1>\n    <p>Please contact your agency for help.</p>\n  </div>\n</body>\n</html>",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=utf-8"
+              }
+            ]
+          }
+        }
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000032",
+      "name": "Show Error Page",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [2500, 1200]
+    }
+  ],
+  "connections": {
+    "Client Visits Start URL": {
+      "main": [
+        [
+          {
+            "node": "App Settings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "App Settings": {
+      "main": [
+        [
+          {
+            "node": "Generate State and Auth URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate State and Auth URL": {
+      "main": [
+        [
+          {
+            "node": "Save State Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save State Token": {
+      "main": [
+        [
+          {
+            "node": "Redirect to Fortnox",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fortnox OAuth Callback": {
+      "main": [
+        [
+          {
+            "node": "App Settings1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "App Settings1": {
+      "main": [
+        [
+          {
+            "node": "Validate Callback Params",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Callback Params": {
+      "main": [
+        [
+          {
+            "node": "Lookup State Token",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Show Error Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lookup State Token": {
+      "main": [
+        [
+          {
+            "node": "Verify State Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify State Token": {
+      "main": [
+        [
+          {
+            "node": "Build Auth Header",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Show Error Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Auth Header": {
+      "main": [
+        [
+          {
+            "node": "Exchange Code for Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Exchange Code for Token": {
+      "main": [
+        [
+          {
+            "node": "Decode JWT and Extract TenantId",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decode JWT and Extract TenantId": {
+      "main": [
+        [
+          {
+            "node": "Verify Consent - Get Company Info",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Show Error Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Consent - Get Company Info": {
+      "main": [
+        [
+          {
+            "node": "Prepare Consent Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Consent Record": {
+      "main": [
+        [
+          {
+            "node": "Store Consent in Table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Consent in Table": {
+      "main": [
+        [
+          {
+            "node": "Notify Agency",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Agency": {
+      "main": [
+        [
+          {
+            "node": "Show Success Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 2,
+  "updatedAt": "2026-02-27T14:30:00.000Z",
+  "versionId": "1"
+}
