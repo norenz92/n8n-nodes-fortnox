@@ -9,14 +9,14 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Authentication
 
-- [ ] **AUTH-01**: Fortnox credential type stores ClientId, ClientSecret, and TenantId per client
-- [ ] **AUTH-02**: Credential uses client credentials grant to obtain access tokens from `apps.fortnox.se/oauth-v1/token`
-- [ ] **AUTH-03**: Access tokens are automatically refreshed before expiry (1-hour TTL, no refresh tokens)
-- [ ] **AUTH-04**: Each client has their own n8n credential with unique TenantId
+- [x] **AUTH-01**: Fortnox credential type stores ClientId, ClientSecret, and TenantId per client
+- [x] **AUTH-02**: Credential uses client credentials grant to obtain access tokens from `apps.fortnox.se/oauth-v1/token`
+- [x] **AUTH-03**: Access tokens are automatically refreshed before expiry (1-hour TTL, no refresh tokens)
+- [x] **AUTH-04**: Each client has their own n8n credential with unique TenantId
 - [ ] **AUTH-05**: OAuth authorization code flow with `account_type=service` captures client consent and TenantId
 - [ ] **AUTH-06**: Shareable authorization endpoint that clients visit to initiate OAuth consent
 - [ ] **AUTH-07**: TenantId is extracted from OAuth response and stored in n8n credential automatically
-- [ ] **AUTH-08**: All foreseeable Fortnox scopes requested upfront during consent (to avoid re-authorization)
+- [x] **AUTH-08**: All foreseeable Fortnox scopes requested upfront during consent (to avoid re-authorization)
 
 ### Invoices
 
@@ -62,8 +62,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **OPS-01**: All list operations support "Return All" toggle with automatic pagination
 - [ ] **OPS-02**: Fortnox error messages are surfaced clearly with English context
 - [ ] **OPS-03**: Rate limiting (25 req/5s per client) handled with retry and backoff on HTTP 429
-- [ ] **OPS-04**: Node follows n8n community node conventions (TypeScript, proper descriptions, additional fields pattern)
-- [ ] **OPS-05**: Package is publishable to npm as `n8n-nodes-fortnox`
+- [x] **OPS-04**: Node follows n8n community node conventions (TypeScript, proper descriptions, additional fields pattern)
+- [x] **OPS-05**: Package is publishable to npm as `n8n-nodes-fortnox`
 
 ## v2 Requirements
 
@@ -106,14 +106,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | Phase 1 | Pending |
-| AUTH-02 | Phase 1 | Pending |
-| AUTH-03 | Phase 1 | Pending |
-| AUTH-04 | Phase 1 | Pending |
+| AUTH-01 | Phase 1 | Complete |
+| AUTH-02 | Phase 1 | Complete |
+| AUTH-03 | Phase 1 | Complete |
+| AUTH-04 | Phase 1 | Complete |
 | AUTH-05 | Phase 4 | Pending |
 | AUTH-06 | Phase 4 | Pending |
 | AUTH-07 | Phase 4 | Pending |
-| AUTH-08 | Phase 1 | Pending |
+| AUTH-08 | Phase 1 | Complete |
 | INV-01 | Phase 2 | Pending |
 | INV-02 | Phase 2 | Pending |
 | INV-03 | Phase 2 | Pending |
@@ -141,8 +141,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | OPS-01 | Phase 2 | Pending |
 | OPS-02 | Phase 2 | Pending |
 | OPS-03 | Phase 2 | Pending |
-| OPS-04 | Phase 1 | Pending |
-| OPS-05 | Phase 1 | Pending |
+| OPS-04 | Phase 1 | Complete |
+| OPS-05 | Phase 1 | Complete |
 
 **Coverage:**
 - v1 requirements: 37 total

@@ -88,7 +88,7 @@ Note: Phase 4 depends on Phase 1 (not Phase 3). Phases 2-3 and Phase 4 could the
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Project Scaffold + Credential System | 0/2 | Planned | - |
+| 1. Project Scaffold + Credential System | 1/2 | In Progress | - |
 | 2. Invoice Resource | 0/TBD | Not started | - |
 | 3. Customer, Article, and Order Resources | 0/TBD | Not started | - |
 | 4. OAuth Consent Onboarding | 0/TBD | Not started | - |
