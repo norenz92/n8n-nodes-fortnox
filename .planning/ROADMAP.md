@@ -45,11 +45,11 @@ Plans:
   3. User can advance an invoice through its lifecycle: update a draft, bookkeep it, send it via email, and cancel or credit it
   4. Fortnox errors are displayed in English with actionable context, not raw Swedish error messages
   5. Operations automatically retry with backoff when hitting the 25 req/5s rate limit
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
+- [ ] 02-01-PLAN.md — GenericFunctions.ts (API request with rate-limit retry, pagination, error translation) + InvoiceDescription.ts (8 operations, field definitions)
+- [ ] 02-02-PLAN.md — Wire Invoice resource into Fortnox.node.ts execute() with all 8 operations and build verification
 
 ### Phase 3: Customer, Article, and Order Resources
 **Goal**: User can manage customers, articles, and orders in Fortnox workflows, completing the four core resources needed for end-to-end accounting automation
@@ -88,7 +88,7 @@ Note: Phase 4 depends on Phase 1 (not Phase 3). Phases 2-3 and Phase 4 could the
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Project Scaffold + Credential System | 1/2 | In Progress | - |
-| 2. Invoice Resource | 0/TBD | Not started | - |
+| 1. Project Scaffold + Credential System | 2/2 | Complete | 2026-02-27 |
+| 2. Invoice Resource | 0/2 | Not started | - |
 | 3. Customer, Article, and Order Resources | 0/TBD | Not started | - |
 | 4. OAuth Consent Onboarding | 0/TBD | Not started | - |
