@@ -76,10 +76,10 @@ Plans:
   1. Agency can generate a shareable URL that a client clicks to initiate Fortnox OAuth consent with account_type=service
   2. After client completes consent, the TenantId is automatically extracted from the OAuth response and surfaced to the agency
   3. Agency can create a working n8n credential from the captured TenantId without the client needing any technical knowledge or n8n access
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 04-01: TBD
+- [ ] 04-01-PLAN.md — Complete OAuth consent onboarding workflow (JSON template) with /start and /callback webhooks, JWT TenantId extraction, Data Table storage, Slack notification, and npm package bundling
 
 ## Progress
 
@@ -92,4 +92,4 @@ Note: Phase 4 depends on Phase 1 (not Phase 3). Phases 2-3 and Phase 4 could the
 | 1. Project Scaffold + Credential System | 2/2 | Complete | 2026-02-27 |
 | 2. Invoice Resource | 2/2 | Complete | 2026-02-27 |
 | 3. Customer, Article, and Order Resources | 0/3 | Complete    | 2026-02-27 |
-| 4. OAuth Consent Onboarding | 0/TBD | Not started | - |
+| 4. OAuth Consent Onboarding | 0/1 | Not started | - |
