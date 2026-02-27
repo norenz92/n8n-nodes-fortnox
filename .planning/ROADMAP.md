@@ -61,11 +61,12 @@ Plans:
   3. User can create a sales order and convert it directly to an invoice
   4. All list operations support pagination with "Return All" toggle and relevant filters (lastmodified for customers, date range for orders)
   5. User can delete an article and cancel an order
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 03-01: TBD
-- [ ] 03-02: TBD
+- [ ] 03-01-PLAN.md — CustomerDescription.ts + ArticleDescription.ts (full field coverage, operations, filters)
+- [ ] 03-02-PLAN.md — OrderDescription.ts (operations, OrderRows, cancel, createInvoice actions)
+- [ ] 03-03-PLAN.md — Wire all three resources into Fortnox.node.ts execute() + build verification
 
 ### Phase 4: OAuth Consent Onboarding
 **Goal**: Clients can authorize their Fortnox account through a shareable link without ever needing n8n access, and the agency can immediately create credentials from the captured TenantId
@@ -90,5 +91,5 @@ Note: Phase 4 depends on Phase 1 (not Phase 3). Phases 2-3 and Phase 4 could the
 |-------|----------------|--------|-----------|
 | 1. Project Scaffold + Credential System | 2/2 | Complete | 2026-02-27 |
 | 2. Invoice Resource | 2/2 | Complete | 2026-02-27 |
-| 3. Customer, Article, and Order Resources | 0/TBD | Not started | - |
+| 3. Customer, Article, and Order Resources | 0/3 | Not started | - |
 | 4. OAuth Consent Onboarding | 0/TBD | Not started | - |
