@@ -25,7 +25,7 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 Phase: 2 of 4 (Invoice Resource) -- COMPLETE
 Plan: 2 of 2 in current phase
 Status: Phase Complete
-Last activity: 2026-02-27 -- Completed 02-02-PLAN.md
+Last activity: 2026-02-27 - Completed quick task 1: publish to npm
 
 Progress: [######....] 57%
 
@@ -80,6 +80,12 @@ None yet.
 
 - Phase 1: `preAuthentication` pattern reliability in current n8n versions needs validation. Fallback: manual token fetch in `execute()`.
 - Phase 4: n8n webhook workflow for OAuth callback -- JWT decoding without external libraries needs investigation.
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 1 | publish to npm | 2026-02-27 | 8c0dda3 | [1-publish-to-npm](./quick/1-publish-to-npm/) |
 
 ## Session Continuity
 
