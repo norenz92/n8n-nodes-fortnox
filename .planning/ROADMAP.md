@@ -91,5 +91,5 @@ Note: Phase 4 depends on Phase 1 (not Phase 3). Phases 2-3 and Phase 4 could the
 |-------|----------------|--------|-----------|
 | 1. Project Scaffold + Credential System | 2/2 | Complete | 2026-02-27 |
 | 2. Invoice Resource | 2/2 | Complete | 2026-02-27 |
-| 3. Customer, Article, and Order Resources | 0/3 | Not started | - |
+| 3. Customer, Article, and Order Resources | 0/3 | Complete    | 2026-02-27 |
 | 4. OAuth Consent Onboarding | 0/TBD | Not started | - |
