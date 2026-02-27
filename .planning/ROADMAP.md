@@ -29,11 +29,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Credential automatically obtains access tokens using client credentials grant and re-requests them before the 1-hour expiry
   4. Credential test button succeeds by calling the company information endpoint and returning the company name
   5. Package builds, lints, and is structured for npm publish with `n8n-community-node-package` keyword
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
+- [ ] 01-01-PLAN.md — Project scaffold and FortnoxApi credential type with preAuthentication token flow
+- [ ] 01-02-PLAN.md — Fortnox node with credential test feedback, icon, and build verification
 
 ### Phase 2: Invoice Resource
 **Goal**: User can automate the full invoice lifecycle -- create, read, list, update, bookkeep, cancel, credit, and send invoices -- with proper pagination, clear error messages, and rate limit resilience
@@ -88,7 +88,7 @@ Note: Phase 4 depends on Phase 1 (not Phase 3). Phases 2-3 and Phase 4 could the
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Project Scaffold + Credential System | 0/TBD | Not started | - |
+| 1. Project Scaffold + Credential System | 0/2 | Planned | - |
 | 2. Invoice Resource | 0/TBD | Not started | - |
 | 3. Customer, Article, and Order Resources | 0/TBD | Not started | - |
 | 4. OAuth Consent Onboarding | 0/TBD | Not started | - |
