@@ -2,6 +2,7 @@ import type {
 	ICredentialTestFunctions,
 	ICredentialsDecrypted,
 	IExecuteFunctions,
+	IHttpRequestOptions,
 	INodeCredentialTestResult,
 	INodeType,
 	INodeTypeDescription,
@@ -20,6 +21,7 @@ export class Fortnox implements INodeType {
 		defaults: {
 			name: 'Fortnox',
 		},
+		usableAsTool: true,
 		inputs: [NodeConnectionTypes.Main],
 		outputs: [NodeConnectionTypes.Main],
 		credentials: [
@@ -41,6 +43,16 @@ export class Fortnox implements INodeType {
 				const { clientId, clientSecret, tenantId, scopes } = credential.data!;
 				const requestedScopes = scopes as string[];
 
+				// Access httpRequest via type assertion -- the runtime helpers object
+				// has httpRequest available, but ICredentialTestFunctions types are limited
+				const httpRequest = (
+					this.helpers as unknown as {
+						httpRequest: (
+							options: IHttpRequestOptions,
+						) => Promise<Record<string, unknown>>;
+					}
+				).httpRequest;
+
 				try {
 					// Step 1: Fetch token to get granted scopes
 					const basicAuth = Buffer.from(
@@ -48,16 +60,15 @@ export class Fortnox implements INodeType {
 					).toString('base64');
 					const scopeString = requestedScopes.join(' ');
 
-					const tokenResponse = (await this.helpers.request({
+					const tokenResponse = (await httpRequest({
 						method: 'POST',
-						uri: 'https://apps.fortnox.se/oauth-v1/token',
+						url: 'https://apps.fortnox.se/oauth-v1/token',
 						headers: {
 							Authorization: `Basic ${basicAuth}`,
 							'Content-Type': 'application/x-www-form-urlencoded',
 							TenantId: tenantId as string,
 						},
 						body: `grant_type=client_credentials&scope=${encodeURIComponent(scopeString)}`,
-						json: true,
 					})) as { access_token: string; scope: string };
 
 					const grantedScopes = tokenResponse.scope.split(' ');
@@ -66,13 +77,12 @@ export class Fortnox implements INodeType {
 					);
 
 					// Step 2: Call company information endpoint
-					const companyResponse = (await this.helpers.request({
+					const companyResponse = (await httpRequest({
 						method: 'GET',
-						uri: 'https://api.fortnox.se/3/companyinformation',
+						url: 'https://api.fortnox.se/3/companyinformation',
 						headers: {
 							Authorization: `Bearer ${tokenResponse.access_token}`,
 						},
-						json: true,
 					})) as {
 						CompanyInformation?: { CompanyName?: string };
 					};

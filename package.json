@@ -4,6 +4,9 @@
 	"description": "n8n community node for Fortnox accounting API",
 	"keywords": ["n8n-community-node-package"],
 	"license": "MIT",
+	"author": {
+		"name": "Adam Noren"
+	},
 	"files": ["dist"],
 	"scripts": {
 		"build": "n8n-node build",

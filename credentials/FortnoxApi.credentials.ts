@@ -12,7 +12,9 @@ export class FortnoxApi implements ICredentialType {
 
 	displayName = 'Fortnox API';
 
-	documentationUrl = '';
+	documentationUrl = 'https://developer.fortnox.se/documentation/';
+
+	icon = 'file:fortnox.svg' as const;
 
 	properties: INodeProperties[] = [
 		{
@@ -21,6 +23,7 @@ export class FortnoxApi implements ICredentialType {
 			type: 'hidden',
 			typeOptions: {
 				expirable: true,
+				password: true,
 			},
 			default: '',
 		},
