@@ -31,12 +31,23 @@ const FORTNOX_ERROR_MAP: Record<number, string> = {
 };
 
 /**
+ * Shape of the error thrown by httpRequestWithAuthentication,
+ * carrying Fortnox error details and HTTP status information.
+ */
+interface FortnoxApiError extends Error {
+	httpCode?: string;
+	cause?: { response?: { body?: IDataObject } };
+	body?: IDataObject;
+	description?: IDataObject;
+}
+
+/**
  * Parse a Fortnox error response and return a NodeApiError with an
  * English translation of the error message when available.
  */
 function parseFortnoxError(
 	this: IExecuteFunctions | ILoadOptionsFunctions | IHookFunctions,
-	error: any,
+	error: FortnoxApiError,
 ): NodeApiError {
 	// Try multiple paths to find the Fortnox ErrorInformation envelope
 	const errorInfo =
@@ -47,14 +58,14 @@ function parseFortnoxError(
 	if (errorInfo) {
 		const { message, code } = errorInfo as { message: string; code: number };
 		const englishMessage = FORTNOX_ERROR_MAP[code] ?? message;
-		return new NodeApiError(this.getNode(), error as JsonObject, {
+		return new NodeApiError(this.getNode(), error as unknown as JsonObject, {
 			message: englishMessage,
 			description: `Fortnox error ${code}: ${message}`,
 			httpCode: error.httpCode,
 		});
 	}
 
-	return new NodeApiError(this.getNode(), error as JsonObject);
+	return new NodeApiError(this.getNode(), error as unknown as JsonObject);
 }
 
 /**
@@ -67,7 +78,7 @@ export async function fortnoxApiRequest(
 	endpoint: string,
 	body: IDataObject = {},
 	qs: IDataObject = {},
-): Promise<any> {
+): Promise<IDataObject> {
 	const options: IHttpRequestOptions = {
 		method,
 		url: `${FORTNOX_API_BASE}${endpoint}`,
@@ -87,19 +98,26 @@ export async function fortnoxApiRequest(
 				this,
 				'fortnoxApi',
 				options,
-			);
-		} catch (error: any) {
+			) as IDataObject;
+		} catch (error) {
+			const apiError = error as FortnoxApiError;
 			// Rate limit: retry with exponential backoff
-			if (error.httpCode === '429' && attempt < MAX_RETRIES) {
+			if (apiError.httpCode === '429' && attempt < MAX_RETRIES) {
 				const delay = BASE_DELAY_MS * Math.pow(2, attempt);
 				await sleep(delay);
 				continue;
 			}
 
 			// Translate Fortnox error envelope to English
-			throw parseFortnoxError.call(this, error);
+			throw parseFortnoxError.call(this, apiError);
 		}
 	}
+
+	// TypeScript requires a return statement -- this is unreachable due to
+	// the throw in the catch block on the final attempt
+	throw new NodeApiError(this.getNode(), {} as JsonObject, {
+		message: 'Max retries exceeded',
+	});
 }
 
 /**
@@ -131,8 +149,8 @@ export async function fortnoxApiRequestAllItems(
 		if (items) {
 			returnData.push(...items);
 		}
-		totalPages =
-			(response.MetaInformation?.['@TotalPages'] as number | undefined) ?? 1;
+		const meta = response.MetaInformation as IDataObject | undefined;
+		totalPages = (meta?.['@TotalPages'] as number | undefined) ?? 1;
 		qs.page = (qs.page as number) + 1;
 	} while ((qs.page as number) <= totalPages);
 
