@@ -18,7 +18,8 @@
 		"url": "https://github.com/norenz92/n8n-nodes-fortnox/issues"
 	},
 	"files": [
-		"dist"
+		"dist",
+		"workflows"
 	],
 	"scripts": {
 		"build": "n8n-node build",
