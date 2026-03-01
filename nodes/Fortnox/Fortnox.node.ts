@@ -12,7 +12,7 @@ import { NodeConnectionTypes } from 'n8n-workflow';
 
 import { articleFields, articleOperations } from './ArticleDescription';
 import { customerFields, customerOperations } from './CustomerDescription';
-import { fortnoxApiRequest, fortnoxApiRequestAllItems, getAccessToken } from './GenericFunctions';
+import { fortnoxApiRequest, fortnoxApiRequestAllItems } from './GenericFunctions';
 import { invoiceFields, invoiceOperations } from './InvoiceDescription';
 import { orderFields, orderOperations } from './OrderDescription';
 
@@ -46,10 +46,6 @@ export class Fortnox implements INodeType {
 				noDataExpression: true,
 				options: [
 					{
-						name: 'Access Token',
-						value: 'accessToken',
-					},
-					{
 						name: 'Article',
 						value: 'article',
 					},
@@ -80,22 +76,6 @@ export class Fortnox implements INodeType {
 				required: true,
 				description:
 					'The numeric tenant identifier for the Fortnox company. Obtained from the Fortnox Auth Callback node during OAuth consent onboarding.',
-			},
-			{
-				displayName: 'Operation',
-				name: 'operation',
-				type: 'options',
-				noDataExpression: true,
-				displayOptions: { show: { resource: ['accessToken'] } },
-				options: [
-					{
-						name: 'Get',
-						value: 'get',
-						action: 'Get an access token',
-						description: 'Fetch a new access token using client credentials',
-					},
-				],
-				default: 'get',
 			},
 			{
 				displayName: 'Operation',
@@ -156,13 +136,6 @@ export class Fortnox implements INodeType {
 		for (let i = 0; i < items.length; i++) {
 			try {
 				let responseData: IDataObject | IDataObject[] | undefined;
-
-				if (resource === 'accessToken') {
-					if (operation === 'get') {
-						const response = await getAccessToken.call(this);
-						responseData = response as IDataObject;
-					}
-				}
 
 				if (resource === 'companyInformation') {
 					if (operation === 'get') {
