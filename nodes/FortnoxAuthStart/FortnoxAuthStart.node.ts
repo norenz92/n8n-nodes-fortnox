@@ -28,8 +28,6 @@ const ALL_SCOPES = [
 	{ name: 'Supplier Invoice', value: 'supplierinvoice' },
 ];
 
-const ALL_SCOPE_VALUES = ALL_SCOPES.map((s) => s.value);
-
 export class FortnoxAuthStart implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Fortnox Auth Start',
@@ -43,6 +41,7 @@ export class FortnoxAuthStart implements INodeType {
 		defaults: {
 			name: 'Fortnox Auth Start',
 		},
+		usableAsTool: true,
 		inputs: [],
 		outputs: [NodeConnectionTypes.Main],
 		credentials: [
@@ -75,7 +74,26 @@ export class FortnoxAuthStart implements INodeType {
 				displayName: 'Scopes',
 				name: 'scopes',
 				type: 'multiOptions',
-				default: ALL_SCOPE_VALUES,
+				default: [
+					'archive',
+					'article',
+					'assets',
+					'bookkeeping',
+					'companyinformation',
+					'costcenter',
+					'currency',
+					'customer',
+					'invoice',
+					'offer',
+					'order',
+					'price',
+					'print',
+					'project',
+					'salary',
+					'settings',
+					'supplier',
+					'supplierinvoice',
+				],
 				options: ALL_SCOPES,
 				description:
 					'Scopes to request during the OAuth consent. Defaults to all 18 scopes to avoid re-authorization.',

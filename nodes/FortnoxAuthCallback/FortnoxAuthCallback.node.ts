@@ -5,7 +5,7 @@ import type {
 	IWebhookFunctions,
 	IWebhookResponseData,
 } from 'n8n-workflow';
-import { NodeConnectionTypes } from 'n8n-workflow';
+import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 
 const SUCCESS_HTML = (companyName: string) => `<!DOCTYPE html>
 <html lang="en">
@@ -76,6 +76,7 @@ export class FortnoxAuthCallback implements INodeType {
 		defaults: {
 			name: 'Fortnox Auth Callback',
 		},
+		usableAsTool: true,
 		inputs: [],
 		outputs: [NodeConnectionTypes.Main],
 		credentials: [
@@ -137,13 +138,19 @@ export class FortnoxAuthCallback implements INodeType {
 			};
 
 			if (!tokenResponse.access_token) {
-				throw new Error('Token exchange failed - no access_token in response');
+				throw new NodeOperationError(
+					this.getNode(),
+					'Token exchange failed - no access_token in response',
+				);
 			}
 
 			// Decode JWT to extract tenantId
 			const parts = tokenResponse.access_token.split('.');
 			if (parts.length !== 3) {
-				throw new Error('Invalid JWT format in access token');
+				throw new NodeOperationError(
+					this.getNode(),
+					'Invalid JWT format in access token',
+				);
 			}
 
 			const payload = JSON.parse(
@@ -151,7 +158,10 @@ export class FortnoxAuthCallback implements INodeType {
 			) as { tenantId?: string | number };
 
 			if (!payload.tenantId) {
-				throw new Error('No tenantId claim found in JWT payload');
+				throw new NodeOperationError(
+					this.getNode(),
+					'No tenantId claim found in JWT payload',
+				);
 			}
 
 			const tenantId = String(payload.tenantId);
