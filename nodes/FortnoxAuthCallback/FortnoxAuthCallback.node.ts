@@ -136,13 +136,21 @@ export class FortnoxAuthCallback implements INodeType {
 					'Content-Type': 'application/x-www-form-urlencoded',
 				},
 				body: `grant_type=authorization_code&code=${encodeURIComponent(code)}&redirect_uri=${encodeURIComponent(webhookUrl)}`,
-			})) as {
-				access_token: string;
-				scope?: string;
-				expires_in?: number;
-			};
+				returnFullResponse: true,
+				ignoreHttpStatusErrors: true,
+			})) as { body: { access_token?: string; scope?: string; expires_in?: number; error?: string; error_description?: string }; statusCode: number };
 
-			if (!tokenResponse.access_token) {
+			if (tokenResponse.statusCode >= 400) {
+				const errBody = tokenResponse.body;
+				throw new NodeOperationError(
+					this.getNode(),
+					`Token exchange failed (${tokenResponse.statusCode}): ${errBody.error || 'unknown'} - ${errBody.error_description || JSON.stringify(errBody)}. redirect_uri sent: ${webhookUrl}`,
+				);
+			}
+
+			const tokenData = tokenResponse.body;
+
+			if (!tokenData.access_token) {
 				throw new NodeOperationError(
 					this.getNode(),
 					'Token exchange failed - no access_token in response',
@@ -150,7 +158,7 @@ export class FortnoxAuthCallback implements INodeType {
 			}
 
 			// Decode JWT to extract tenantId
-			const parts = tokenResponse.access_token.split('.');
+			const parts = tokenData.access_token.split('.');
 			if (parts.length !== 3) {
 				throw new NodeOperationError(
 					this.getNode(),
@@ -178,7 +186,7 @@ export class FortnoxAuthCallback implements INodeType {
 					method: 'GET',
 					url: 'https://api.fortnox.se/3/companyinformation',
 					headers: {
-						Authorization: `Bearer ${tokenResponse.access_token}`,
+						Authorization: `Bearer ${tokenData.access_token}`,
 					},
 				})) as { CompanyInformation?: { CompanyName?: string } };
 
@@ -201,7 +209,7 @@ export class FortnoxAuthCallback implements INodeType {
 							json: {
 								tenantId,
 								companyName,
-								scopesGranted: tokenResponse.scope ?? '',
+								scopesGranted: tokenData.scope ?? '',
 								timestamp: new Date().toISOString(),
 							},
 						},
