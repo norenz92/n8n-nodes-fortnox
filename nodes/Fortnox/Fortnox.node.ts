@@ -13,7 +13,7 @@ import { NodeConnectionTypes } from 'n8n-workflow';
 
 import { articleFields, articleOperations } from './ArticleDescription';
 import { customerFields, customerOperations } from './CustomerDescription';
-import { fortnoxApiRequest, fortnoxApiRequestAllItems } from './GenericFunctions';
+import { fortnoxApiRequest, fortnoxApiRequestAllItems, getAccessToken } from './GenericFunctions';
 import { invoiceFields, invoiceOperations } from './InvoiceDescription';
 import { orderFields, orderOperations } from './OrderDescription';
 
@@ -47,8 +47,16 @@ export class Fortnox implements INodeType {
 				noDataExpression: true,
 				options: [
 					{
+						name: 'Access Token',
+						value: 'accessToken',
+					},
+					{
 						name: 'Article',
 						value: 'article',
+					},
+					{
+						name: 'Company Information',
+						value: 'companyInformation',
 					},
 					{
 						name: 'Customer',
@@ -64,6 +72,38 @@ export class Fortnox implements INodeType {
 					},
 				],
 				default: 'invoice',
+			},
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: { show: { resource: ['accessToken'] } },
+				options: [
+					{
+						name: 'Get',
+						value: 'get',
+						action: 'Get an access token',
+						description: 'Fetch a new access token using client credentials',
+					},
+				],
+				default: 'get',
+			},
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: { show: { resource: ['companyInformation'] } },
+				options: [
+					{
+						name: 'Get',
+						value: 'get',
+						action: 'Get company information',
+						description: 'Retrieve company information from Fortnox',
+					},
+				],
+				default: 'get',
 			},
 			...articleOperations,
 			...articleFields,
@@ -158,6 +198,20 @@ export class Fortnox implements INodeType {
 		for (let i = 0; i < items.length; i++) {
 			try {
 				let responseData: IDataObject | IDataObject[] | undefined;
+
+				if (resource === 'accessToken') {
+					if (operation === 'get') {
+						const response = await getAccessToken.call(this);
+						responseData = response as IDataObject;
+					}
+				}
+
+				if (resource === 'companyInformation') {
+					if (operation === 'get') {
+						const response = await fortnoxApiRequest.call(this, 'GET', '/3/companyinformation');
+						responseData = response.CompanyInformation as IDataObject;
+					}
+				}
 
 				if (resource === 'invoice') {
 					if (operation === 'create') {
