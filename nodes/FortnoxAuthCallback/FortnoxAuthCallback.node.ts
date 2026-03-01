@@ -120,8 +120,14 @@ export class FortnoxAuthCallback implements INodeType {
 			const clientId = credentials.clientId as string;
 			const clientSecret = credentials.clientSecret as string;
 
-			// Build redirect_uri from this node's own webhook URL
-			const webhookUrl = this.getNodeWebhookUrl('default') ?? '';
+			// Reconstruct redirect_uri from the actual incoming request so it
+			// matches exactly what was sent in the authorization request
+			// (webhook-test vs webhook, etc.)
+			const req = this.getRequestObject();
+			const protocol = (req.headers['x-forwarded-proto'] as string) || 'https';
+			const host = req.headers.host as string;
+			const path = (req.originalUrl ?? req.url ?? '').split('?')[0];
+			const webhookUrl = `${protocol}://${host}${path}`;
 
 			const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString(
 				'base64',
