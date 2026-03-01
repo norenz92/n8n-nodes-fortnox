@@ -185,14 +185,25 @@ export class FortnoxAuthCallback implements INodeType {
 
 			const tenantId = String(payload.tenantId);
 
-			// Verify consent by calling Company Information API
+			// Fetch a client_credentials token for this tenant to call the API
 			let companyName = 'Unknown Company';
 			try {
+				const apiTokenResponse = (await this.helpers.httpRequest({
+					method: 'POST',
+					url: 'https://apps.fortnox.se/oauth-v1/token',
+					headers: {
+						Authorization: `Basic ${basicAuth}`,
+						'Content-Type': 'application/x-www-form-urlencoded',
+						TenantId: tenantId,
+					},
+					body: `grant_type=client_credentials&scope=${encodeURIComponent(tokenData.scope ?? 'companyinformation')}`,
+				})) as { access_token: string };
+
 				const companyResponse = (await this.helpers.httpRequest({
 					method: 'GET',
 					url: 'https://api.fortnox.se/3/companyinformation',
 					headers: {
-						Authorization: `Bearer ${tokenData.access_token}`,
+						Authorization: `Bearer ${apiTokenResponse.access_token}`,
 					},
 				})) as { CompanyInformation?: { CompanyName?: string } };
 
