@@ -1,0 +1,202 @@
+import type {
+	IDataObject,
+	INodeType,
+	INodeTypeDescription,
+	IWebhookFunctions,
+	IWebhookResponseData,
+} from 'n8n-workflow';
+import { NodeConnectionTypes } from 'n8n-workflow';
+
+const SUCCESS_HTML = (companyName: string) => `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Authorization Successful</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      display: flex; justify-content: center; align-items: center;
+      min-height: 100vh; background: #f8f9fa; color: #333;
+    }
+    .container { text-align: center; padding: 2rem; max-width: 480px; }
+    .icon { font-size: 4rem; margin-bottom: 1rem; color: #28a745; }
+    h1 { font-size: 1.5rem; margin-bottom: 0.5rem; font-weight: 600; }
+    p { color: #666; font-size: 1rem; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">&#10004;</div>
+    <h1>${companyName} has been authorized</h1>
+    <p>You can close this page.</p>
+  </div>
+</body>
+</html>`;
+
+const ERROR_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Authorization Error</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      display: flex; justify-content: center; align-items: center;
+      min-height: 100vh; background: #f8f9fa; color: #333;
+    }
+    .container { text-align: center; padding: 2rem; max-width: 480px; }
+    .icon { font-size: 4rem; margin-bottom: 1rem; color: #dc3545; }
+    h1 { font-size: 1.5rem; margin-bottom: 0.5rem; font-weight: 600; }
+    p { color: #666; font-size: 1rem; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">&#10008;</div>
+    <h1>Something went wrong</h1>
+    <p>Please contact your agency for help.</p>
+  </div>
+</body>
+</html>`;
+
+export class FortnoxAuthCallback implements INodeType {
+	description: INodeTypeDescription = {
+		displayName: 'Fortnox Auth Callback',
+		name: 'fortnoxAuthCallback',
+		icon: 'file:fortnox.svg',
+		group: ['trigger'],
+		version: 1,
+		subtitle: 'OAuth callback handler',
+		description:
+			'Handles the Fortnox OAuth callback, exchanges the authorization code for a token, and outputs the tenantId and company information.',
+		defaults: {
+			name: 'Fortnox Auth Callback',
+		},
+		inputs: [],
+		outputs: [NodeConnectionTypes.Main],
+		credentials: [
+			{
+				name: 'fortnoxApi',
+				required: true,
+			},
+		],
+		webhooks: [
+			{
+				name: 'default',
+				httpMethod: 'GET',
+				responseMode: 'onReceived',
+				path: 'callback',
+				nodeType: 'webhook',
+			},
+		],
+		properties: [],
+	};
+
+	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
+		const query = this.getQueryData() as IDataObject;
+		const res = this.getResponseObject();
+
+		// Handle error or missing code from Fortnox
+		if (query.error || !query.code) {
+			res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+			res.end(ERROR_HTML);
+			return { noWebhookResponse: true };
+		}
+
+		const code = query.code as string;
+
+		try {
+			const credentials = await this.getCredentials('fortnoxApi');
+			const clientId = credentials.clientId as string;
+			const clientSecret = credentials.clientSecret as string;
+
+			// Build redirect_uri from this node's own webhook URL
+			const webhookUrl = this.getNodeWebhookUrl('default') ?? '';
+
+			const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString(
+				'base64',
+			);
+
+			// Exchange authorization code for access token
+			const tokenResponse = (await this.helpers.httpRequest({
+				method: 'POST',
+				url: 'https://apps.fortnox.se/oauth-v1/token',
+				headers: {
+					Authorization: `Basic ${basicAuth}`,
+					'Content-Type': 'application/x-www-form-urlencoded',
+				},
+				body: `grant_type=authorization_code&code=${encodeURIComponent(code)}&redirect_uri=${encodeURIComponent(webhookUrl)}`,
+			})) as {
+				access_token: string;
+				scope?: string;
+				expires_in?: number;
+			};
+
+			if (!tokenResponse.access_token) {
+				throw new Error('Token exchange failed - no access_token in response');
+			}
+
+			// Decode JWT to extract tenantId
+			const parts = tokenResponse.access_token.split('.');
+			if (parts.length !== 3) {
+				throw new Error('Invalid JWT format in access token');
+			}
+
+			const payload = JSON.parse(
+				Buffer.from(parts[1], 'base64').toString(),
+			) as { tenantId?: string | number };
+
+			if (!payload.tenantId) {
+				throw new Error('No tenantId claim found in JWT payload');
+			}
+
+			const tenantId = String(payload.tenantId);
+
+			// Verify consent by calling Company Information API
+			let companyName = 'Unknown Company';
+			try {
+				const companyResponse = (await this.helpers.httpRequest({
+					method: 'GET',
+					url: 'https://api.fortnox.se/3/companyinformation',
+					headers: {
+						Authorization: `Bearer ${tokenResponse.access_token}`,
+					},
+				})) as { CompanyInformation?: { CompanyName?: string } };
+
+				companyName =
+					companyResponse.CompanyInformation?.CompanyName ?? 'Unknown Company';
+			} catch {
+				// Company info lookup failed; continue with unknown name
+			}
+
+			// Send success HTML to the client
+			res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+			res.end(SUCCESS_HTML(companyName));
+
+			// Return workflow data for downstream nodes
+			return {
+				noWebhookResponse: true,
+				workflowData: [
+					[
+						{
+							json: {
+								tenantId,
+								companyName,
+								scopesGranted: tokenResponse.scope ?? '',
+								timestamp: new Date().toISOString(),
+							},
+						},
+					],
+				],
+			};
+		} catch {
+			res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+			res.end(ERROR_HTML);
+			return { noWebhookResponse: true };
+		}
+	}
+}
