@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-01T11:00:38Z"
+last_updated: "2026-03-01T11:38:27Z"
 progress:
   total_phases: 4
   completed_phases: 4
@@ -25,7 +25,7 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 Phase: 4 of 4 (OAuth Consent Onboarding)
 Plan: 1 of 1 in current phase (COMPLETE)
 Status: Phase 4 Complete -- All 1 plan executed
-Last activity: 2026-03-01 - Completed quick task 2: Add getAccessToken and getCompanyInformation actions to Fortnox node
+Last activity: 2026-03-01 - Completed quick task 3: Replace auth workflow with dedicated OAuth nodes
 
 Progress: [##########] 100%
 
@@ -89,6 +89,10 @@ Recent decisions affecting current work:
 - [04-01]: All 18 Fortnox scopes hardcoded per AUTH-08 to avoid re-authorization
 - [04-01]: Data Table for CSRF state storage (not workflow static data) for reliability on n8n Cloud
 - [04-01]: Omitted access_type=offline -- consent only captures TenantId, client_credentials handles API access
+- [quick-3]: Two-node OAuth approach (AuthStart + AuthCallback) instead of single restartWebhook node
+- [quick-3]: Credentials simplified to clientId + clientSecret; tenantId moved to per-node parameter
+- [quick-3]: Manual token management via Map cache in GenericFunctions replaces preAuthentication pattern
+- [quick-3]: CSRF state not cross-validated between nodes; code exchange provides security
 
 ### Pending Todos
 
@@ -96,7 +100,7 @@ None yet.
 
 ### Blockers/Concerns
 
-- Phase 1: `preAuthentication` pattern reliability in current n8n versions needs validation. Fallback: manual token fetch in `execute()`.
+- Phase 1: RESOLVED -- preAuthentication pattern replaced with manual token fetch in GenericFunctions (quick-3)
 - Phase 4: RESOLVED -- JWT decoding uses Buffer.from(token.split('.')[1], 'base64').toString() in Code node, no external libraries needed.
 
 ### Quick Tasks Completed
@@ -105,9 +109,10 @@ None yet.
 |---|-------------|------|--------|-----------|
 | 1 | publish to npm | 2026-02-27 | 8c0dda3 | [1-publish-to-npm](./quick/1-publish-to-npm/) |
 | 2 | Add getAccessToken and Company Information resources | 2026-03-01 | 60fa26a | [2-add-getaccesstoken-and-getcompanyinforma](./quick/2-add-getaccesstoken-and-getcompanyinforma/) |
+| 3 | Replace auth workflow with dedicated OAuth nodes | 2026-03-01 | 573e04e | [3-replace-auth-workflow-with-dedicated-oau](./quick/3-replace-auth-workflow-with-dedicated-oau/) |
 
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: Completed quick task 2 (Add getAccessToken and Company Information resources)
+Stopped at: Completed quick task 3 (Replace auth workflow with dedicated OAuth nodes)
 Resume file: None
