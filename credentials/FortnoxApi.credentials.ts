@@ -35,6 +35,40 @@ export class FortnoxApi implements ICredentialType {
 			description:
 				'Found in Fortnox Developer Portal under your app settings',
 		},
+		{
+			displayName: 'Scopes',
+			name: 'scopes',
+			type: 'multiOptions',
+			default: [],
+			options: [
+				{ name: 'Archive', value: 'archive' },
+				{ name: 'Article', value: 'article' },
+				{ name: 'Assets', value: 'assets' },
+				{ name: 'Bookkeeping', value: 'bookkeeping' },
+				{ name: 'Company Information', value: 'companyinformation' },
+				{ name: 'Connect File', value: 'connectfile' },
+				{ name: 'Cost Center', value: 'costcenter' },
+				{ name: 'Currency', value: 'currency' },
+				{ name: 'Customer', value: 'customer' },
+				{ name: 'Inbox', value: 'inbox' },
+				{ name: 'Invoice', value: 'invoice' },
+				{ name: 'Nox Finans Invoice', value: 'noxfinansinvoice' },
+				{ name: 'Offer', value: 'offer' },
+				{ name: 'Order', value: 'order' },
+				{ name: 'Payment', value: 'payment' },
+				{ name: 'Price', value: 'price' },
+				{ name: 'Print', value: 'print' },
+				{ name: 'Profile', value: 'profile' },
+				{ name: 'Project', value: 'project' },
+				{ name: 'Salary', value: 'salary' },
+				{ name: 'Settings', value: 'settings' },
+				{ name: 'Supplier', value: 'supplier' },
+				{ name: 'Supplier Invoice', value: 'supplierinvoice' },
+				{ name: 'Time Reporting', value: 'timereporting' },
+			],
+			description:
+				'Scopes to request when fetching access tokens. Only select scopes that your Fortnox app has been approved for in the developer portal.',
+		},
 	];
 
 	// Credential test requires a tenantId (set per-node) so we use a

@@ -12,10 +12,6 @@ const FORTNOX_API_BASE = 'https://api.fortnox.se';
 const MAX_RETRIES = 3;
 const BASE_DELAY_MS = 1000;
 
-/** All 18 Fortnox scopes, requested on every client_credentials grant (AUTH-08). */
-const ALL_SCOPES =
-	'archive article assets bookkeeping companyinformation costcenter currency customer invoice offer order price print project salary settings supplier supplierinvoice';
-
 /**
  * In-memory token cache keyed by tenantId.
  * Each entry stores the access_token and its expiry timestamp.
@@ -93,6 +89,8 @@ async function getTokenForTenant(
 	const credentials = await this.getCredentials('fortnoxApi');
 	const clientId = credentials.clientId as string;
 	const clientSecret = credentials.clientSecret as string;
+	const scopes = (credentials.scopes as string[]) ?? [];
+	const scopeString = scopes.join(' ');
 	const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString(
 		'base64',
 	);
@@ -105,7 +103,7 @@ async function getTokenForTenant(
 			'Content-Type': 'application/x-www-form-urlencoded',
 			TenantId: tenantId,
 		},
-		body: `grant_type=client_credentials&scope=${encodeURIComponent(ALL_SCOPES)}`,
+		body: `grant_type=client_credentials&scope=${encodeURIComponent(scopeString)}`,
 	})) as { access_token: string; expires_in: number };
 
 	const expiresAt = Date.now() + response.expires_in * 1000 - 60_000;
@@ -188,6 +186,8 @@ export async function getAccessToken(
 	const credentials = await this.getCredentials('fortnoxApi');
 	const clientId = credentials.clientId as string;
 	const clientSecret = credentials.clientSecret as string;
+	const scopes = (credentials.scopes as string[]) ?? [];
+	const scopeString = scopes.join(' ');
 
 	const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString(
 		'base64',
@@ -201,7 +201,7 @@ export async function getAccessToken(
 			'Content-Type': 'application/x-www-form-urlencoded',
 			TenantId: tenantId,
 		},
-		body: `grant_type=client_credentials&scope=${encodeURIComponent(ALL_SCOPES)}`,
+		body: `grant_type=client_credentials&scope=${encodeURIComponent(scopeString)}`,
 	});
 
 	return response as IDataObject;
