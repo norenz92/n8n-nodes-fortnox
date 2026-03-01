@@ -121,6 +121,37 @@ export async function fortnoxApiRequest(
 }
 
 /**
+ * Fetch a new access token from the Fortnox preAuthentication token endpoint
+ * using the credential's ClientId, ClientSecret, TenantId, and scopes.
+ * Returns the full token response (access_token, token_type, expires_in, scope).
+ */
+export async function getAccessToken(
+	this: IExecuteFunctions,
+): Promise<IDataObject> {
+	const credentials = await this.getCredentials('fortnoxApi');
+	const clientId = credentials.clientId as string;
+	const clientSecret = credentials.clientSecret as string;
+	const tenantId = credentials.tenantId as string;
+	const scopes = credentials.scopes as string[];
+
+	const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+	const scopeString = scopes.join(' ');
+
+	const response = await this.helpers.httpRequest({
+		method: 'POST',
+		url: 'https://apps.fortnox.se/oauth-v1/token',
+		headers: {
+			Authorization: `Basic ${basicAuth}`,
+			'Content-Type': 'application/x-www-form-urlencoded',
+			TenantId: tenantId,
+		},
+		body: `grant_type=client_credentials&scope=${encodeURIComponent(scopeString)}`,
+	});
+
+	return response as IDataObject;
+}
+
+/**
  * Paginate through all pages of a Fortnox list endpoint using
  * MetaInformation.@TotalPages, accumulating all results.
  */
