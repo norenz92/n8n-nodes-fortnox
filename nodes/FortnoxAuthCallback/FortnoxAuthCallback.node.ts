@@ -35,7 +35,7 @@ const SUCCESS_HTML = (companyName: string) => `<!DOCTYPE html>
 </body>
 </html>`;
 
-const ERROR_HTML = `<!DOCTYPE html>
+const ERROR_HTML = (detail?: string) => `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -52,6 +52,7 @@ const ERROR_HTML = `<!DOCTYPE html>
     .icon { font-size: 4rem; margin-bottom: 1rem; color: #dc3545; }
     h1 { font-size: 1.5rem; margin-bottom: 0.5rem; font-weight: 600; }
     p { color: #666; font-size: 1rem; line-height: 1.5; }
+    .detail { margin-top: 1rem; padding: 1rem; background: #f1f1f1; border-radius: 6px; font-size: 0.85rem; color: #888; word-break: break-all; text-align: left; }
   </style>
 </head>
 <body>
@@ -59,6 +60,7 @@ const ERROR_HTML = `<!DOCTYPE html>
     <div class="icon">&#10008;</div>
     <h1>Something went wrong</h1>
     <p>Please contact your agency for help.</p>
+    ${detail ? `<div class="detail">${detail}</div>` : ''}
   </div>
 </body>
 </html>`;
@@ -103,8 +105,11 @@ export class FortnoxAuthCallback implements INodeType {
 
 		// Handle error or missing code from Fortnox
 		if (query.error || !query.code) {
+			const detail = query.error
+				? `Fortnox error: ${query.error} - ${query.error_description || 'no description'}`
+				: 'No authorization code received from Fortnox';
 			res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-			res.end(ERROR_HTML);
+			res.end(ERROR_HTML(detail));
 			return { noWebhookResponse: true };
 		}
 
@@ -203,9 +208,10 @@ export class FortnoxAuthCallback implements INodeType {
 					],
 				],
 			};
-		} catch {
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
 			res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-			res.end(ERROR_HTML);
+			res.end(ERROR_HTML(message));
 			return { noWebhookResponse: true };
 		}
 	}
