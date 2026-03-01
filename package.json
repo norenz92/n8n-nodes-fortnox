@@ -36,7 +36,9 @@
 			"dist/credentials/FortnoxApi.credentials.js"
 		],
 		"nodes": [
-			"dist/nodes/Fortnox/Fortnox.node.js"
+			"dist/nodes/Fortnox/Fortnox.node.js",
+			"dist/nodes/FortnoxAuthStart/FortnoxAuthStart.node.js",
+			"dist/nodes/FortnoxAuthCallback/FortnoxAuthCallback.node.js"
 		]
 	},
 	"peerDependencies": {

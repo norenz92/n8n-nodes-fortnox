@@ -3,7 +3,6 @@ import type {
 	IExecuteFunctions,
 	IHookFunctions,
 	IHttpRequestMethods,
-	IHttpRequestOptions,
 	ILoadOptionsFunctions,
 	JsonObject,
 } from 'n8n-workflow';
@@ -12,6 +11,16 @@ import { NodeApiError, sleep } from 'n8n-workflow';
 const FORTNOX_API_BASE = 'https://api.fortnox.se';
 const MAX_RETRIES = 3;
 const BASE_DELAY_MS = 1000;
+
+/** All 18 Fortnox scopes, requested on every client_credentials grant (AUTH-08). */
+const ALL_SCOPES =
+	'archive article assets bookkeeping companyinformation costcenter currency customer invoice offer order price print project salary settings supplier supplierinvoice';
+
+/**
+ * In-memory token cache keyed by tenantId.
+ * Each entry stores the access_token and its expiry timestamp.
+ */
+const tokenCache = new Map<string, { token: string; expiresAt: number }>();
 
 /**
  * Common Fortnox error codes mapped to English translations.
@@ -31,7 +40,7 @@ const FORTNOX_ERROR_MAP: Record<number, string> = {
 };
 
 /**
- * Shape of the error thrown by httpRequestWithAuthentication,
+ * Shape of the error thrown by httpRequest,
  * carrying Fortnox error details and HTTP status information.
  */
 interface FortnoxApiError extends Error {
@@ -69,8 +78,48 @@ function parseFortnoxError(
 }
 
 /**
+ * Fetch an access token for the given tenantId using client_credentials grant.
+ * Caches tokens in-memory with a 60-second expiry buffer.
+ */
+async function getTokenForTenant(
+	this: IExecuteFunctions,
+	tenantId: string,
+): Promise<string> {
+	const cached = tokenCache.get(tenantId);
+	if (cached && cached.expiresAt > Date.now()) {
+		return cached.token;
+	}
+
+	const credentials = await this.getCredentials('fortnoxApi');
+	const clientId = credentials.clientId as string;
+	const clientSecret = credentials.clientSecret as string;
+	const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString(
+		'base64',
+	);
+
+	const response = (await this.helpers.httpRequest({
+		method: 'POST',
+		url: 'https://apps.fortnox.se/oauth-v1/token',
+		headers: {
+			Authorization: `Basic ${basicAuth}`,
+			'Content-Type': 'application/x-www-form-urlencoded',
+			TenantId: tenantId,
+		},
+		body: `grant_type=client_credentials&scope=${encodeURIComponent(ALL_SCOPES)}`,
+	})) as { access_token: string; expires_in: number };
+
+	const expiresAt = Date.now() + response.expires_in * 1000 - 60_000;
+	tokenCache.set(tenantId, { token: response.access_token, expiresAt });
+
+	return response.access_token;
+}
+
+/**
  * Send an authenticated request to the Fortnox API with automatic
  * rate-limit retry using exponential backoff on HTTP 429 responses.
+ *
+ * Reads tenantId from the node parameter and fetches a Bearer token
+ * using client_credentials grant with in-memory caching.
  */
 export async function fortnoxApiRequest(
 	this: IExecuteFunctions | ILoadOptionsFunctions | IHookFunctions,
@@ -79,11 +128,22 @@ export async function fortnoxApiRequest(
 	body: IDataObject = {},
 	qs: IDataObject = {},
 ): Promise<IDataObject> {
-	const options: IHttpRequestOptions = {
+	// Read tenantId from the node parameter (all items share the same tenant)
+	const tenantId = this.getNodeParameter('tenantId', 0) as string;
+	const token = await getTokenForTenant.call(
+		this as IExecuteFunctions,
+		tenantId,
+	);
+
+	const options = {
 		method,
 		url: `${FORTNOX_API_BASE}${endpoint}`,
 		qs,
 		json: true,
+		headers: {
+			Authorization: `Bearer ${token}`,
+		} as Record<string, string>,
+		body: undefined as IDataObject | undefined,
 	};
 
 	// Only set body if it has keys -- action endpoints (bookkeep, cancel,
@@ -94,11 +154,7 @@ export async function fortnoxApiRequest(
 
 	for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
 		try {
-			return await this.helpers.httpRequestWithAuthentication.call(
-				this,
-				'fortnoxApi',
-				options,
-			) as IDataObject;
+			return (await this.helpers.httpRequest(options)) as IDataObject;
 		} catch (error) {
 			const apiError = error as FortnoxApiError;
 			// Rate limit: retry with exponential backoff
@@ -121,21 +177,21 @@ export async function fortnoxApiRequest(
 }
 
 /**
- * Fetch a new access token from the Fortnox preAuthentication token endpoint
- * using the credential's ClientId, ClientSecret, TenantId, and scopes.
+ * Fetch a new access token from the Fortnox token endpoint
+ * using client_credentials grant with the per-node tenantId.
  * Returns the full token response (access_token, token_type, expires_in, scope).
  */
 export async function getAccessToken(
 	this: IExecuteFunctions,
 ): Promise<IDataObject> {
+	const tenantId = this.getNodeParameter('tenantId', 0) as string;
 	const credentials = await this.getCredentials('fortnoxApi');
 	const clientId = credentials.clientId as string;
 	const clientSecret = credentials.clientSecret as string;
-	const tenantId = credentials.tenantId as string;
-	const scopes = credentials.scopes as string[];
 
-	const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
-	const scopeString = scopes.join(' ');
+	const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString(
+		'base64',
+	);
 
 	const response = await this.helpers.httpRequest({
 		method: 'POST',
@@ -145,7 +201,7 @@ export async function getAccessToken(
 			'Content-Type': 'application/x-www-form-urlencoded',
 			TenantId: tenantId,
 		},
-		body: `grant_type=client_credentials&scope=${encodeURIComponent(scopeString)}`,
+		body: `grant_type=client_credentials&scope=${encodeURIComponent(ALL_SCOPES)}`,
 	});
 
 	return response as IDataObject;

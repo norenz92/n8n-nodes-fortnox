@@ -3,7 +3,6 @@ import type {
 	ICredentialsDecrypted,
 	IDataObject,
 	IExecuteFunctions,
-	IHttpRequestOptions,
 	INodeCredentialTestResult,
 	INodeExecutionData,
 	INodeType,
@@ -74,6 +73,15 @@ export class Fortnox implements INodeType {
 				default: 'invoice',
 			},
 			{
+				displayName: 'Tenant ID',
+				name: 'tenantId',
+				type: 'string',
+				default: '',
+				required: true,
+				description:
+					'The numeric tenant identifier for the Fortnox company. Obtained from the Fortnox Auth Callback node during OAuth consent onboarding.',
+			},
+			{
 				displayName: 'Operation',
 				name: 'operation',
 				type: 'options',
@@ -122,69 +130,19 @@ export class Fortnox implements INodeType {
 				this: ICredentialTestFunctions,
 				credential: ICredentialsDecrypted,
 			): Promise<INodeCredentialTestResult> {
-				const { clientId, clientSecret, tenantId, scopes } = credential.data!;
-				const requestedScopes = scopes as string[];
+				const { clientId, clientSecret } = credential.data!;
 
-				// Access httpRequest via type assertion -- the runtime helpers object
-				// has httpRequest available, but ICredentialTestFunctions types are limited
-				const httpRequest = (
-					this.helpers as unknown as {
-						httpRequest: (
-							options: IHttpRequestOptions,
-						) => Promise<Record<string, unknown>>;
-					}
-				).httpRequest;
-
-				try {
-					// Step 1: Fetch token to get granted scopes
-					const basicAuth = Buffer.from(
-						`${clientId as string}:${clientSecret as string}`,
-					).toString('base64');
-					const scopeString = requestedScopes.join(' ');
-
-					const tokenResponse = (await httpRequest({
-						method: 'POST',
-						url: 'https://apps.fortnox.se/oauth-v1/token',
-						headers: {
-							Authorization: `Basic ${basicAuth}`,
-							'Content-Type': 'application/x-www-form-urlencoded',
-							TenantId: tenantId as string,
-						},
-						body: `grant_type=client_credentials&scope=${encodeURIComponent(scopeString)}`,
-					})) as { access_token: string; scope: string };
-
-					const grantedScopes = tokenResponse.scope.split(' ');
-					const missingScopes = requestedScopes.filter(
-						(s) => !grantedScopes.includes(s),
-					);
-
-					// Step 2: Call company information endpoint
-					const companyResponse = (await httpRequest({
-						method: 'GET',
-						url: 'https://api.fortnox.se/3/companyinformation',
-						headers: {
-							Authorization: `Bearer ${tokenResponse.access_token}`,
-						},
-					})) as {
-						CompanyInformation?: { CompanyName?: string };
-					};
-
-					const companyName =
-						companyResponse.CompanyInformation?.CompanyName ?? 'Unknown';
-
-					// Step 3: Build result message
-					let message = `Connected to ${companyName}`;
-					if (missingScopes.length > 0) {
-						message += `. Warning: missing scopes: ${missingScopes.join(', ')}`;
-					}
-
-					return { status: 'OK', message };
-				} catch (error) {
+				if (!clientId || !clientSecret) {
 					return {
 						status: 'Error',
-						message: `Authentication failed: ${(error as Error).message}`,
+						message: 'Client ID and Client Secret are required',
 					};
 				}
+
+				return {
+					status: 'OK',
+					message: 'Credentials are configured. Use the Fortnox Auth nodes to onboard tenants.',
+				};
 			},
 		},
 	};
