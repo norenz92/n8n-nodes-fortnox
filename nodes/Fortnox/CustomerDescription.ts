@@ -574,6 +574,7 @@ export const customerFields: INodeProperties[] = [
 				displayName: 'Email',
 				name: 'email',
 				type: 'string',
+				placeholder: 'name@email.com',
 				default: '',
 				description: 'Search customers by email (LIKE match)',
 			},
