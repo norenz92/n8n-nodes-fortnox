@@ -177,6 +177,16 @@ const commonInvoiceFields: INodeProperties[] = [
 		description: 'Internal reference',
 	},
 	{
+		displayName: 'Remarks',
+		name: 'Remarks',
+		type: 'string',
+		typeOptions: {
+			rows: 4,
+		},
+		default: '',
+		description: 'Invoice text (Fakturatext) — appears on the printed invoice',
+	},
+	{
 		displayName: 'Terms Of Payment',
 		name: 'TermsOfPayment',
 		type: 'string',
