@@ -185,11 +185,11 @@ export class FortnoxAuthCallback implements INodeType {
 
 			const tenantId = String(payload.tenantId);
 
-			// Fetch a client_credentials token for this tenant to call the API
+			// Fetch a client_credentials token for this tenant to look up company name.
+			// Always request 'companyinformation' scope regardless of user-configured
+			// scopes — this is a one-time lookup just for displaying the company name.
 			let companyName = 'Unknown Company';
 			try {
-				const credScopes = (credentials.scopes as string[]) ?? [];
-				const scopeString = credScopes.length > 0 ? credScopes.join(' ') : (tokenData.scope ?? 'companyinformation');
 				const apiTokenResponse = (await this.helpers.httpRequest({
 					method: 'POST',
 					url: 'https://apps.fortnox.se/oauth-v1/token',
@@ -198,7 +198,7 @@ export class FortnoxAuthCallback implements INodeType {
 						'Content-Type': 'application/x-www-form-urlencoded',
 						TenantId: tenantId,
 					},
-					body: `grant_type=client_credentials&scope=${encodeURIComponent(scopeString)}`,
+					body: 'grant_type=client_credentials&scope=companyinformation',
 				})) as { access_token: string };
 
 				const companyResponse = (await this.helpers.httpRequest({
