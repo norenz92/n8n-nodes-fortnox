@@ -134,6 +134,14 @@ const commonInvoiceFields: INodeProperties[] = [
 		description: 'Invoice due date (YYYY-MM-DD)',
 	},
 	{
+		displayName: 'Exclude Zero Price Rows',
+		name: 'excludeZeroPriceRows',
+		type: 'boolean',
+		default: false,
+		description:
+			'Whether to filter out invoice rows where Price is 0 before sending to Fortnox',
+	},
+	{
 		displayName: 'Freight',
 		name: 'Freight',
 		type: 'number',
@@ -287,6 +295,24 @@ export const invoiceFields: INodeProperties[] = [
 				values: invoiceRowFields,
 			},
 		],
+	},
+
+	// ---------------------------------------------------------------
+	// C2. Invoice Rows JSON (alternative to fixedCollection for create)
+	// ---------------------------------------------------------------
+	{
+		displayName: 'Invoice Rows (JSON)',
+		name: 'invoiceRowsJson',
+		type: 'json',
+		displayOptions: {
+			show: {
+				resource: ['invoice'],
+				operation: ['create'],
+			},
+		},
+		default: '',
+		description:
+			'JSON array of invoice row objects. Each object can have: ArticleNumber, AccountNumber, DeliveredQuantity, Description, Price. Use this instead of the Invoice Rows field above when building rows dynamically from a list. Example: [{"ArticleNumber": "1001", "DeliveredQuantity": 2, "Price": 100}]',
 	},
 
 	// ---------------------------------------------------------------
