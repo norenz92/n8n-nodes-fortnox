@@ -25,7 +25,7 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 Phase: 4 of 4 (OAuth Consent Onboarding)
 Plan: 1 of 1 in current phase (COMPLETE)
 Status: Phase 4 Complete -- All 1 plan executed
-Last activity: 2026-03-05 - Completed quick task 4: Add Fakturatext (Remarks) field to invoice
+Last activity: 2026-03-10 - Completed quick task 5: Fix invoice creation - support item list and zero-price filter
 
 Progress: [##########] 100%
 
@@ -93,6 +93,8 @@ Recent decisions affecting current work:
 - [quick-3]: Credentials simplified to clientId + clientSecret; tenantId moved to per-node parameter
 - [quick-3]: Manual token management via Map cache in GenericFunctions replaces preAuthentication pattern
 - [quick-3]: CSRF state not cross-validated between nodes; code exchange provides security
+- [quick-5]: JSON rows (invoiceRowsJson) take priority over fixedCollection when both provided
+- [quick-5]: excludeZeroPriceRows in commonInvoiceFields shared between create and update operations
 
 ### Pending Todos
 
@@ -111,9 +113,10 @@ None yet.
 | 2 | Add getAccessToken and Company Information resources | 2026-03-01 | 60fa26a | [2-add-getaccesstoken-and-getcompanyinforma](./quick/2-add-getaccesstoken-and-getcompanyinforma/) |
 | 3 | Replace auth workflow with dedicated OAuth nodes | 2026-03-01 | 573e04e | [3-replace-auth-workflow-with-dedicated-oau](./quick/3-replace-auth-workflow-with-dedicated-oau/) |
 | 4 | Add Fakturatext (Remarks) field to invoice | 2026-03-05 | 4fef8cac | [4-add-fakturatext-remarks-field-to-invoice](./quick/4-add-fakturatext-remarks-field-to-invoice/) |
+| 5 | Fix invoice creation - support item list and zero-price filter | 2026-03-10 | 5cc4b98d | [5-fix-invoice-creation-support-item-list-l](./quick/5-fix-invoice-creation-support-item-list-l/) |
 
 ## Session Continuity
 
-Last session: 2026-03-05
-Stopped at: Completed quick task 4 (Add Fakturatext Remarks field to invoice)
+Last session: 2026-03-10
+Stopped at: Completed quick task 5 (Fix invoice creation - support item list and zero-price filter)
 Resume file: None
