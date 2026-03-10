@@ -8,7 +8,7 @@ import type {
 	INodeType,
 	INodeTypeDescription,
 } from 'n8n-workflow';
-import { NodeConnectionTypes } from 'n8n-workflow';
+import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 
 import { articleFields, articleOperations } from './ArticleDescription';
 import { customerFields, customerOperations } from './CustomerDescription';
@@ -148,6 +148,7 @@ export class Fortnox implements INodeType {
 					if (operation === 'create') {
 						const customerNumber = this.getNodeParameter('customerNumber', i) as string;
 						const invoiceRows = this.getNodeParameter('invoiceRows', i) as IDataObject;
+						const invoiceRowsJson = this.getNodeParameter('invoiceRowsJson', i) as string | IDataObject[];
 						const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
 
 						const body: IDataObject = {
@@ -158,8 +159,35 @@ export class Fortnox implements INodeType {
 
 						const invoiceBody = body.Invoice as IDataObject;
 
-						if (invoiceRows.row) {
-							invoiceBody.InvoiceRows = invoiceRows.row;
+						// Normalize rows: JSON input takes priority over fixedCollection
+						let rows: IDataObject[] = [];
+						if (invoiceRowsJson) {
+							if (typeof invoiceRowsJson === 'string' && invoiceRowsJson.trim() !== '') {
+								try {
+									rows = JSON.parse(invoiceRowsJson) as IDataObject[];
+								} catch {
+									throw new NodeOperationError(
+										this.getNode(),
+										'Invalid JSON in Invoice Rows (JSON) field',
+										{ itemIndex: i },
+									);
+								}
+							} else if (Array.isArray(invoiceRowsJson)) {
+								rows = invoiceRowsJson as IDataObject[];
+							}
+						} else if (invoiceRows.row) {
+							rows = invoiceRows.row as IDataObject[];
+						}
+
+						// Filter zero-price rows if enabled
+						const excludeZero = (additionalFields.excludeZeroPriceRows as boolean) || false;
+						if (excludeZero) {
+							rows = rows.filter((row) => Number(row.Price) !== 0);
+						}
+						delete additionalFields.excludeZeroPriceRows;
+
+						if (rows.length > 0) {
+							invoiceBody.InvoiceRows = rows;
 						}
 
 						for (const key of Object.keys(additionalFields)) {
@@ -217,10 +245,20 @@ export class Fortnox implements INodeType {
 						const invoiceBody = body.Invoice as IDataObject;
 
 						if (updateFields.InvoiceRows) {
-							const rows = updateFields.InvoiceRows as IDataObject;
-							invoiceBody.InvoiceRows = rows.row;
+							let updateRows = (updateFields.InvoiceRows as IDataObject).row as IDataObject[];
+
+							// Filter zero-price rows if enabled
+							const excludeZeroUpdate = (updateFields.excludeZeroPriceRows as boolean) || false;
+							if (excludeZeroUpdate && updateRows) {
+								updateRows = updateRows.filter((row) => Number(row.Price) !== 0);
+							}
+
+							if (updateRows && updateRows.length > 0) {
+								invoiceBody.InvoiceRows = updateRows;
+							}
 							delete updateFields.InvoiceRows;
 						}
+						delete updateFields.excludeZeroPriceRows;
 
 						for (const key of Object.keys(updateFields)) {
 							if (updateFields[key] !== '') {
