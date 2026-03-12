@@ -186,6 +186,18 @@ export class Fortnox implements INodeType {
 						}
 						delete additionalFields.excludeZeroPriceRows;
 
+						// Strip empty defaults so Fortnox auto-fills from article settings
+						// (e.g. omitting AccountNumber lets Fortnox use the article's pre-assigned account)
+						rows = rows.map((row) => {
+							const cleaned: IDataObject = {};
+							for (const [k, v] of Object.entries(row)) {
+								if (v === '' || v === null || v === undefined) continue;
+								if (k === 'AccountNumber' && v === 0) continue;
+								cleaned[k] = v;
+							}
+							return cleaned;
+						});
+
 						if (rows.length > 0) {
 							invoiceBody.InvoiceRows = rows;
 						}
@@ -251,6 +263,19 @@ export class Fortnox implements INodeType {
 							const excludeZeroUpdate = (updateFields.excludeZeroPriceRows as boolean) || false;
 							if (excludeZeroUpdate && updateRows) {
 								updateRows = updateRows.filter((row) => Number(row.Price) !== 0);
+							}
+
+							// Strip empty defaults so Fortnox auto-fills from article settings
+							if (updateRows) {
+								updateRows = updateRows.map((row) => {
+									const cleaned: IDataObject = {};
+									for (const [k, v] of Object.entries(row)) {
+										if (v === '' || v === null || v === undefined) continue;
+										if (k === 'AccountNumber' && v === 0) continue;
+										cleaned[k] = v;
+									}
+									return cleaned;
+								});
 							}
 
 							if (updateRows && updateRows.length > 0) {
@@ -473,7 +498,18 @@ export class Fortnox implements INodeType {
 						};
 						const orderBody = body.Order as IDataObject;
 						if (orderRows.row) {
-							orderBody.OrderRows = orderRows.row;
+							let rows = orderRows.row as IDataObject[];
+							// Strip empty defaults so Fortnox auto-fills from article settings
+							rows = rows.map((row) => {
+								const cleaned: IDataObject = {};
+								for (const [k, v] of Object.entries(row)) {
+									if (v === '' || v === null || v === undefined) continue;
+									if (k === 'AccountNumber' && v === 0) continue;
+									cleaned[k] = v;
+								}
+								return cleaned;
+							});
+							orderBody.OrderRows = rows;
 						}
 						for (const key of Object.keys(additionalFields)) {
 							if (additionalFields[key] !== '') {
@@ -523,8 +559,18 @@ export class Fortnox implements INodeType {
 						const orderBody = body.Order as IDataObject;
 						// Handle OrderRows nested fixedCollection
 						if (updateFields.OrderRows) {
-							const rows = updateFields.OrderRows as IDataObject;
-							orderBody.OrderRows = rows.row;
+							let orderUpdateRows = (updateFields.OrderRows as IDataObject).row as IDataObject[];
+							// Strip empty defaults so Fortnox auto-fills from article settings
+							orderUpdateRows = orderUpdateRows.map((row) => {
+								const cleaned: IDataObject = {};
+								for (const [k, v] of Object.entries(row)) {
+									if (v === '' || v === null || v === undefined) continue;
+									if (k === 'AccountNumber' && v === 0) continue;
+									cleaned[k] = v;
+								}
+								return cleaned;
+							});
+							orderBody.OrderRows = orderUpdateRows;
 							delete updateFields.OrderRows;
 						}
 						for (const key of Object.keys(updateFields)) {
