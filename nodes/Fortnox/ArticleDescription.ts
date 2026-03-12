@@ -366,6 +366,27 @@ export const articleFields: INodeProperties[] = [
 		default: {},
 		options: [
 			{
+				displayName: 'Article Number',
+				name: 'articlenumber',
+				type: 'string',
+				default: '',
+				description: 'Search articles by article number (LIKE match)',
+			},
+			{
+				displayName: 'Description',
+				name: 'description',
+				type: 'string',
+				default: '',
+				description: 'Search articles by description (LIKE match)',
+			},
+			{
+				displayName: 'EAN',
+				name: 'ean',
+				type: 'string',
+				default: '',
+				description: 'Search articles by EAN barcode (LIKE match)',
+			},
+			{
 				displayName: 'Filter',
 				name: 'filter',
 				type: 'options',
@@ -383,6 +404,20 @@ export const articleFields: INodeProperties[] = [
 				default: '',
 				description:
 					'Filter by last modified date (YYYY-MM-DD HH:MM)',
+			},
+			{
+				displayName: 'Manufacturer',
+				name: 'manufacturer',
+				type: 'string',
+				default: '',
+				description: 'Search articles by manufacturer name (LIKE match)',
+			},
+			{
+				displayName: 'Manufacturer Article Number',
+				name: 'manufacturerartno',
+				type: 'string',
+				default: '',
+				description: 'Search articles by manufacturer article number (LIKE match)',
 			},
 			{
 				displayName: 'Sort By',
@@ -407,6 +442,13 @@ export const articleFields: INodeProperties[] = [
 				],
 				default: 'ascending',
 				description: 'Sort direction',
+			},
+			{
+				displayName: 'Supplier Number',
+				name: 'supplier',
+				type: 'string',
+				default: '',
+				description: 'Search articles by supplier number (LIKE match)',
 			},
 		],
 	},
