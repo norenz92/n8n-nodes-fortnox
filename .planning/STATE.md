@@ -25,7 +25,7 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 Phase: 4 of 4 (OAuth Consent Onboarding)
 Plan: 1 of 1 in current phase (COMPLETE)
 Status: Phase 4 Complete -- All 1 plan executed
-Last activity: 2026-03-10 - Completed quick task 5: Fix invoice creation - support item list and zero-price filter
+Last activity: 2026-03-12 - Completed quick task 6: Add article search/list functionality
 
 Progress: [##########] 100%
 
@@ -114,9 +114,10 @@ None yet.
 | 3 | Replace auth workflow with dedicated OAuth nodes | 2026-03-01 | 573e04e | [3-replace-auth-workflow-with-dedicated-oau](./quick/3-replace-auth-workflow-with-dedicated-oau/) |
 | 4 | Add Fakturatext (Remarks) field to invoice | 2026-03-05 | 4fef8cac | [4-add-fakturatext-remarks-field-to-invoice](./quick/4-add-fakturatext-remarks-field-to-invoice/) |
 | 5 | Fix invoice creation - support item list and zero-price filter | 2026-03-10 | 5cc4b98d | [5-fix-invoice-creation-support-item-list-l](./quick/5-fix-invoice-creation-support-item-list-l/) |
+| 6 | Add article search/list functionality | 2026-03-12 | a8d6bd76 | [6-add-article-search-list-functionality](./quick/6-add-article-search-list-functionality/) |
 
 ## Session Continuity
 
-Last session: 2026-03-10
-Stopped at: Completed quick task 5 (Fix invoice creation - support item list and zero-price filter)
+Last session: 2026-03-12
+Stopped at: Completed quick task 6 (Add article search/list functionality)
 Resume file: None
