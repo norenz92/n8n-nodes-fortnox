@@ -16,6 +16,24 @@ import { fortnoxApiRequest, fortnoxApiRequestAllItems } from './GenericFunctions
 import { invoiceFields, invoiceOperations } from './InvoiceDescription';
 import { orderFields, orderOperations } from './OrderDescription';
 
+/**
+ * Strip empty/default values from row objects so Fortnox can auto-fill from article settings.
+ * Specifically, omitting AccountNumber lets Fortnox use the article's pre-assigned account.
+ */
+function stripEmptyRowDefaults(rows: IDataObject[]): IDataObject[] {
+	return rows.map((row) => {
+		const cleaned: IDataObject = {};
+		for (const [k, v] of Object.entries(row)) {
+			if (v === '' || v === null || v === undefined) continue;
+			// Strip AccountNumber when it's 0 (number default from fixedCollection)
+			// or "0" (string, possible from JSON input) — 0 is never a valid account number
+			if (k === 'AccountNumber' && (v === 0 || v === '0')) continue;
+			cleaned[k] = v;
+		}
+		return cleaned;
+	});
+}
+
 export class Fortnox implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Fortnox',
@@ -186,17 +204,7 @@ export class Fortnox implements INodeType {
 						}
 						delete additionalFields.excludeZeroPriceRows;
 
-						// Strip empty defaults so Fortnox auto-fills from article settings
-						// (e.g. omitting AccountNumber lets Fortnox use the article's pre-assigned account)
-						rows = rows.map((row) => {
-							const cleaned: IDataObject = {};
-							for (const [k, v] of Object.entries(row)) {
-								if (v === '' || v === null || v === undefined) continue;
-								if (k === 'AccountNumber' && v === 0) continue;
-								cleaned[k] = v;
-							}
-							return cleaned;
-						});
+						rows = stripEmptyRowDefaults(rows);
 
 						if (rows.length > 0) {
 							invoiceBody.InvoiceRows = rows;
@@ -265,17 +273,8 @@ export class Fortnox implements INodeType {
 								updateRows = updateRows.filter((row) => Number(row.Price) !== 0);
 							}
 
-							// Strip empty defaults so Fortnox auto-fills from article settings
 							if (updateRows) {
-								updateRows = updateRows.map((row) => {
-									const cleaned: IDataObject = {};
-									for (const [k, v] of Object.entries(row)) {
-										if (v === '' || v === null || v === undefined) continue;
-										if (k === 'AccountNumber' && v === 0) continue;
-										cleaned[k] = v;
-									}
-									return cleaned;
-								});
+								updateRows = stripEmptyRowDefaults(updateRows);
 							}
 
 							if (updateRows && updateRows.length > 0) {
@@ -498,17 +497,7 @@ export class Fortnox implements INodeType {
 						};
 						const orderBody = body.Order as IDataObject;
 						if (orderRows.row) {
-							let rows = orderRows.row as IDataObject[];
-							// Strip empty defaults so Fortnox auto-fills from article settings
-							rows = rows.map((row) => {
-								const cleaned: IDataObject = {};
-								for (const [k, v] of Object.entries(row)) {
-									if (v === '' || v === null || v === undefined) continue;
-									if (k === 'AccountNumber' && v === 0) continue;
-									cleaned[k] = v;
-								}
-								return cleaned;
-							});
+							const rows = stripEmptyRowDefaults(orderRows.row as IDataObject[]);
 							orderBody.OrderRows = rows;
 						}
 						for (const key of Object.keys(additionalFields)) {
@@ -559,17 +548,9 @@ export class Fortnox implements INodeType {
 						const orderBody = body.Order as IDataObject;
 						// Handle OrderRows nested fixedCollection
 						if (updateFields.OrderRows) {
-							let orderUpdateRows = (updateFields.OrderRows as IDataObject).row as IDataObject[];
-							// Strip empty defaults so Fortnox auto-fills from article settings
-							orderUpdateRows = orderUpdateRows.map((row) => {
-								const cleaned: IDataObject = {};
-								for (const [k, v] of Object.entries(row)) {
-									if (v === '' || v === null || v === undefined) continue;
-									if (k === 'AccountNumber' && v === 0) continue;
-									cleaned[k] = v;
-								}
-								return cleaned;
-							});
+							const orderUpdateRows = stripEmptyRowDefaults(
+								(updateFields.OrderRows as IDataObject).row as IDataObject[],
+							);
 							orderBody.OrderRows = orderUpdateRows;
 							delete updateFields.OrderRows;
 						}
